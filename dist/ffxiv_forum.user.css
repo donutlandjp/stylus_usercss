@@ -1,0 +1,3232 @@
+/* ==UserStyle==
+@name         FFXIV Forum
+@description  This stylesheet seals evil horizontal scroll bars.
+@namespace    donutland.jp/edl/stylus_usrcss
+@author       Anne Donut
+@version      1.0.0
+@license      MIT
+@preprocessor stylus
+
+@var number viewWidth "本文の表示幅 (20-100)" [40, 20, 100, 1, "rem"]
+@var select authorDisplayMode "投稿者の表示形式" {
+	"標準": "normal",
+	"シンプル": "simple",
+	"コンパクト": "compact"
+}
+@var select signature "署名欄" {
+	"表示する": "block",
+	"表示しない": "none"
+}
+@var select images "署名欄の画像" {
+	"表示する": "inline",
+	"小さく表示": "small",
+	"表示しない": "none"
+}
+@var select signatureSeparator "署名欄の区切り線" {
+	"あり": "dotted",
+	"なし*": "none"
+}
+@var select subjectSeparator "見出しの区切り線" {
+	"あり*": "solid",
+	"なし": "none"
+}
+@var select preview "編集プレヴューの位置" {
+	"上": "top",
+	"右": "right"
+}
+==/UserStyle== */
+
+@-moz-document domain("forum.square-enix.com") {
+
+:root {
+	--view-width    : viewWidth;
+	--line-height   : lineHeight;
+	--max-body-width: calc(var(--view-width) + 13rem + 2rem);
+	--subject-separator  : subjectSeparator;
+	--signature-separator: signatureSeparator;
+	--preview-column-width: "min(50% - 1ex, calc(var(--view-width) + 2em))" % null;
+
+	--forum-foreground-color: #333333;
+	--forum-message-color   : #59432d;
+	--forum-background-color: #e6e1d3;
+	--forum-bazel-color     : #ccc4ad;
+	--forum-border-color    : #998a7a;
+	--forum-contrast-color  : #f2e6c2;
+}
+
+.postbody      blockquote.postcontent img,
+.postpreview   blockquote.preview     img,
+#nrreview      blockquote.restore     img,
+.after_content blockquote.signature   img {
+	max-width : 100% !important;
+	max-height: 80vh !important;
+}
+
+body {
+	min-width  : auto !important;
+	font-family: sans-serif !important;
+}
+#forum_logo {
+	width: 100%;
+}
+.body_bound {
+	width    : var(--max-body-width);
+	max-width: calc(100% - 1rem);
+	margin   : 0 0.5rem;
+}
+.body_wrapper {
+	padding: 1rem;
+}
+
+#breadcrumb {
+	margin-bottom: 1ex;
+}
+.above_threadlist,
+.above_postlist,
+.below_threadlist {
+	position : static;
+	float    : none;
+	height   : auto !important;
+	margin   : 0 0 1ex 0;
+	display  : flex;
+	flex-wrap: wrap;
+	gap      : 1ex;
+}
+.above_threadlist,
+.above_postlist,
+#threadlist + .below_threadlist {
+	justify-content: space-between;
+}
+.above_threadlist > *:first-child,
+.below_threadlist > *:first-child {
+	flex: none;
+}
+.below_threadlist {
+	margin-bottom: 2em;
+	justify-content: flex-end;
+}
+#pagetitle {
+	margin : 0 0 1ex 0;
+	padding: 0;
+	line-height: 1.5;
+}
+
+#content_container {
+	padding: 0;
+}
+ol.announcements > * {
+	float: none;
+	margin: 1ex 0 1em 0 !important;
+}
+
+#footer {
+	padding: 0.5ex 1.5ex;
+	display: flex;
+	gap    : 1em;
+	justify-content: space-between;
+	align-items: center;
+}
+#footer::after {
+	display: none;
+}
+#footer > * {
+	margin: 0;
+}
+#footer > ul {
+	display: flex;
+	gap: 2em;
+}
+#footer > form:nth-of-type(2),
+#footer > ul::after {
+	display: none;
+}
+
+
+
+/**** Flat Elements ****/
+
+.forumrow *,
+form#charlist .settings_form_border *,
+form#profileform *,
+#member_content * {
+	box-sizing: border-box !important;
+	float     : none   !important;
+	position  : static !important;
+	width     : auto !important;
+	height    : auto !important;
+	max-width : auto !important;
+	max-height: auto !important;
+	min-width : auto !important;
+	min-height: auto !important;
+	margin    : 0    !important;
+	padding   : 0    !important;
+}
+
+
+/**** Footer ****/
+
+.below_body {
+	padding: 1.5rem 1rem 1rem 1rem;
+	min-height: auto;
+	overflow: visible;
+}
+.below_body br,
+.below_body > div:nth-child(3),
+.below_body > div:nth-child(4) {
+	display: none;
+}
+#our_copyright {
+	width    : var(--max-body-width);
+	max-width: 100%;
+	margin   : 0;
+	padding  : 0;
+	display  : flex;
+	gap      : 1rem;
+	flex-direction: column;
+}
+#our_copyright > * {
+	margin: 0;
+}
+#our_copyright table,
+#our_copyright table * {
+	display: block;
+	border : none;
+}
+#our_copyright tr {
+	display  : flex;
+	flex-wrap: wrap;
+	gap      : 1em 0;
+	align-items: center;
+}
+#our_copyright tr td {
+	flex: 0 0 min-content;
+}
+#our_copyright > div:last-of-type {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5ex;
+	text-align: start !important;
+}
+#our_copyright > div > div:nth-last-child(3) {
+	overflow: hidden;
+}
+#our_copyright > div > div:nth-last-child(3) img {
+	margin-left: -208px;
+}
+
+
+
+/**** Components ****/
+
+/** Tool Bar **/
+.toolsmenu {
+	float  : none;
+	padding: 0.5ex 1ex;
+	width  : auto;
+	border: none;
+}
+.toolsmenu * {
+	float: none !important;
+}
+.toolsmenu > div {
+	border: none;
+}
+.toolsmenu ul {
+	margin : 0;
+	padding: 0;
+}
+ul#postlist_popups {
+	margin   : 0;
+	display  : flex;
+	flex-wrap: wrap;
+	gap      : 0.5ex 1em;
+	justify-content: flex-end;
+}
+ul#postlist_popups::after {
+	display: none;
+}
+ul#postlist_popups * {
+	position: static;
+	margin: 0;
+	padding: 0;
+}
+ul#postlist_popups h6 a {
+	background-size: contain;
+	padding-right: 2.5ex;
+}
+ul#postlist_popups h6 a.firstunread {
+	color: var(--forum-contrast-color);
+}
+ul#postlist_popups ul.popupbody {
+	position: absolute !important;
+}
+
+ul#forumdisplaypopups {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+ul#forumdisplaypopups li h6 a {
+	padding-right: 1.8em;
+}
+
+/** Context Menus **/
+ul.popupbody[style*="display: block;"] {
+	position: absolute !important;
+	width    : max-content;
+	max-width: calc(100vw - 3rem - 18px) !important;
+	min-width: auto !important;
+	padding      : 2px !important;
+	border-radius: 0 !important;
+}
+ul.popupbody::after {
+	display: none;
+}
+ul.popupbody li {
+	float   : none     !important;
+	position: relative !important;
+	width   : auto     !important;
+}
+ul.popupbody li + li {
+	margin-top: 2px !important;
+}
+ul.popupbody li > img {
+	position: absolute !important;
+	left    : 1ex;
+	top     : 1ex !important;
+	padding : 0   !important;
+	pointer-events: none;
+}
+ul.popupbody li > a,
+ul.popupbody li > label {
+	padding: 1ex !important;
+	white-space: nowrap !important;
+}
+ul.popupbody li > img + a {
+	padding: 1ex 2ex 1ex 4ex !important;
+}
+ul.popupbody li.optionlabel {
+	color: var(--forum-contrast-color) !important;
+}
+
+/** Forum Search **/
+li.forumsearch  form > ul,
+li.searchthread form > ul {
+	width: 16em !important;
+}
+li.forumsearch  form > ul li:nth-child(1),
+li.searchthread form > ul li:nth-child(1) {
+	display: flex;
+	gap: 1ex;
+}
+li.forumsearch form > ul li.formsubmit .submitoptions {
+	width: auto !important;
+}
+.advancedsearchlink {
+	width: auto !important;
+}
+.advancedsearchlink::before {
+	content: "→";
+	margin: 0 0.5ex 0 0;
+}
+
+
+/** Buttons **/
+.actionbuttons {
+	margin: 1ex 0 0 0;
+	padding: 0;
+	text-align: end;
+}
+.actionbuttons .group {
+	max-width: none !important;
+	margin : 0 !important;
+	padding: 0;
+}
+.actionbuttons input.button {
+	padding: 0.5ex 1em !important;
+}
+
+
+
+/**** Quick Navigation ****/
+
+.navpopupmenu {
+	width    : 16em !important;
+	max-width: 100% !important;
+	display  : flex;
+	gap      : 0.5ex;
+	flex-direction: column;
+	text-align    : center;
+}
+.navpopupmenu .shade {
+	margin-bottom: 0.2ex !important;
+	font-weight  : bold;
+}
+.navpopupmenu > a {
+	padding: 0.5ex 1ex !important;
+}
+.navpopupmenu a .ctrlcontainer {
+	padding-left: 1.5em !important;
+	white-space: normal !important;
+}
+.navpopupmenu > ul {
+	--indent-width: 1em;
+	left      : auto        !important;
+	right     : 0           !important;
+	max-height: 50vh !important;
+	box-sizing: border-box;
+}
+.navpopupmenu > ul a {
+	text-indent: 0 !important;
+}
+.navpopupmenu > ul li {
+	min-width: auto;
+}
+.navpopupmenu > ul > li > a {
+	padding-left: var(--indent-width) !important;
+}
+.navpopupmenu > ul > li li > a {
+	padding-left: calc(var(--indent-width) * 2) !important;
+}
+.navpopupmenu > ul > li li li > a {
+	padding-left: calc(var(--indent-width) * 3) !important;
+}
+.navpopupmenu > ul > li li li li > a {
+	padding-left: calc(var(--indent-width) * 4) !important;
+}
+.navpopupmenu > ul > li li li li li > a {
+	padding-left: calc(var(--indent-width) * 5) !important;
+}
+.navpopupmenu > ul > li li li li li li > a {
+	padding-left: calc(var(--indent-width) * 6) !important;
+}
+.navpopupmenu > ul > li li li li li li li > a {
+	padding-left: calc(var(--indent-width) * 7) !important;
+}
+.navpopupmenu > ul > li li li li li li li li > a {
+	padding-left: calc(var(--indent-width) * 8) !important;
+}
+.navpopupmenu > ul > li li li li li li li li li li > a {
+	padding-left: calc(var(--indent-width) * 9) !important;
+}
+
+
+/**** Error Messages ****/
+.standard_error {
+	margin : 2em 0 !important;
+	padding: 0 !important;
+	max-width: none;
+}
+.standard_error > div {
+	padding: 1em !important;
+}
+.standard_error > div > div {
+	padding: 0 !important;
+}
+.standard_error > div > div::after {
+	display: none !important;
+}
+
+
+
+/**** Profile ****/
+
+#member_content {
+	position: static;
+	display : flex !important;
+	gap     : 1em;
+}
+#sidebar_container {
+	flex: 0 0 15em;
+}
+@media (max-width: 35rem) { 
+	#member_content {
+		flex-direction: column;
+	}
+	#sidebar_container {
+		flex: auto;
+	}
+}
+/** Menu **/
+#member_content #sidebar_container > * {
+	height: 100% !important;
+	padding: 1ex !important;
+	display: flex !important;
+	gap: 1em;
+	flex-direction: column;
+}
+#member_content #sidebar_container #userinfo {
+	display: flex;
+	gap: 0.5ex 1ex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+#member_content #sidebar_container #userinfo .member_username {
+	overflow-wrap: anywhere;
+}
+#member_content #sidebar_container > * > h1 br {
+	display: none;
+}
+#usermenu {
+	line-height: 1.5;
+}
+#usermenu a {
+	display: flex;
+	gap: 0.5ex;
+	align-items: flex-start;
+}
+#usermenu a img {
+	flex: 0 0 1.5em;
+}
+
+/** Abount Me **/
+#userprof_content_container {
+	flex: 1 1 auto;
+}
+
+#profile_tabs .memberprofiletabunder {
+	display: none;
+}
+#profile_tabs dl {
+	display: flex;
+}
+#profile_tabs dd a {
+	padding: 0 1ex !important;
+}
+#view-aboutme.selected_view_section {
+	display: block !important;
+}
+#view-aboutme > a {
+	padding: 0.5ex 1ex !important;
+	display: block;
+	text-align: end;
+}
+#view-aboutme > *.blocksubhead {
+	padding: 0.5ex 1ex !important;
+}
+#view-aboutme > *:nth-child(5) {
+	background-color: var(--forum-background-color) !important;
+	background-image: none;
+	border-color: var(--forum-border-color);
+}
+#view-aboutme > *:nth-child(5) img {
+	max-width: 100%;
+}
+#view-aboutme > .subsection {
+	padding: 1ex !important;
+	display: flex;
+	gap: 1em;
+	flex-direction: column;
+}
+#view-aboutme > .subsection dl dt {
+	display: flex;
+	gap: 0.5ex;
+	align-items: center;
+}
+#view-aboutme > .subsection dl dt a {
+	order: -1;
+}
+#view-aboutme > .subsection dl dd {
+	display: block;
+	margin: 0.8ex 0 0 2em !important;
+}
+
+#view-aboutme > .subsection fieldset > div {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5ex;
+}
+#view-aboutme > .subsection fieldset > div > div:last-child {
+	text-align: end;
+}
+#view-aboutme > .subsection fieldset > div > input[type="text"] {
+	padding: 0.5ex 1ex !important;
+}
+#view-aboutme > .subsection fieldset textarea {
+	width  : 100% !important;
+	height : 5em !important;
+	padding: 0.5ex 1ex !important;
+}
+#view-aboutme > .subsection fieldset div input.button {
+	padding: 0.5ex 1em !important;
+}
+#view-aboutme > .subsection fieldset div input.button {
+	padding: 0.5ex 1em !important;
+}
+
+
+/** Character **/
+#view-characters {
+	width: 100% !important;
+}
+#view-characters > *:first-child {
+	padding: 0.5ex 1ex !important;
+}
+form#charlist .settings_form_border > div:nth-of-type(2) > div,
+form#charlist ul#mainchar,
+div#charlist {
+	padding: 1em !important;
+}
+form#charlist ul.charlist,
+div#charlist  ul.charlist {
+	position: relative !important;
+	padding : 1em !important;
+	display : grid;
+	gap     : 0.5ex 0;
+	grid-template-columns: min-content repeat(3, max-content) 1fr;
+	background-size: 100% 200% !important;
+}
+form#charlist ul.charlist li.charimg,
+div#charlist  ul.charlist li.charimg {
+	grid-row: 1/4;
+	width : 5em !important;
+	height: 5em !important;
+}
+form#charlist ul.charlist li.charimg img,
+div#charlist  ul.charlist li.charimg img {
+	width: 100% !important;
+}
+form#charlist ul.charlist li.charname,
+form#charlist ul.charlist li.charworld,
+div#charlist  ul.charlist li.charname,
+div#charlist  ul.charlist li.charworld {
+	grid-column: 2/6;
+	margin: 0 0 0 1rem !important;
+	overflow-wrap: anywhere;
+}
+form#charlist ul.charlist li.charskill ,
+div#charlist  ul.charlist li.charskill {
+	width  : calc(20px + 3.5ex) !important;
+	height : 20px !important;
+	margin: 0 0 0 1rem !important;
+	display: flex;
+	align-items    : center;
+	justify-content: end;
+}
+form#charlist ul.charlist li.charmain ,
+div#charlist  ul.charlist li.charmain {
+	position: absolute !important;
+	left: 1ex;
+	top : 1ex;
+	width : 20px !important;
+	height: 20px !important;
+	background-size: 100% auto;
+}
+form#charlist ul.charlist li.chardisplay ,
+div#charlist  ul.charlist li.chardisplay {
+	display: none;
+}
+
+
+/**** 1. Forum List (Top) ****/
+
+ol#forums > li + li {
+	margin-top: 1em;
+}
+div.forumhead {
+	position: static;
+	width   : 100% !important;
+	height  : auto;
+	margin  : 0;
+	padding : 0;
+	box-sizing: border-box;
+}
+div.forumhead > h2 {
+	float    : none !important;
+	width    : auto !important;
+	min-width: auto;
+	margin   : 0 !important;
+	padding  : 0.5ex 1ex !important;
+	display  : flex !important;
+	gap      : 1em;
+	align-items: center;
+}
+div.forumhead > h2 > * {
+	margin : 0 !important;
+	padding: 0 !important;
+}
+div.forumhead > h2 > .forumtitle {
+	flex       : 1 0 max-content;
+	width      : auto !important;
+	min-width  : auto !important;
+	text-indent: 0    !important;
+	
+}
+div.forumhead > h2 > .forumtitle a {
+	margin: 0 !important;
+}
+div.forumhead > h2 > .forumlastpost {
+	flex   : 0 1 max-content;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap    : 0.5ex;
+}
+div.forumhead h2 > .forumlastpost > * {
+	flex   : none;
+	margin : 0 !important;
+	padding: 0 !important;
+}
+div.forumhead h2 > .forumlastpost br {
+	display: none;
+}
+div.forumhead h2 > a {
+	flex   : 0 0 max-content;
+	display: flex !important;
+	justify-content: center;
+	align-items    : center;
+}
+div.forumhead h2 > a img {
+	width : 1.5em !important;
+	height: auto  !important;
+}
+div.forumhead h2 > a,
+div.forumhead h2 > a img {
+	position: static !important;
+}
+
+.forumrowdata {
+	height: auto !important;
+	box-sizing: border-box;
+}
+
+.forumrow {
+	box-sizing: border-box;
+	min-height: auto !important;
+	padding   : 1ex;
+	display   : grid !important;
+	min-height: 2.8rem   !important;
+}
+
+#forums .forumrow.L2 {
+	gap: 1ex;
+	grid-template-columns: min-content 1fr;
+}
+#forums .forumrow.L2 > img {
+	position: static !important;
+	width   : 2.5rem !important;
+	margin  : -0.5ex !important;
+}
+#forums .forumrow.L2 > .forumdata > div > h2.forumtitle {
+	margin-bottom: 0.5ex !important;
+}
+#forums .forumrow.L2 > .forumdata > div > p.forumdescription > * {
+	flex: none;
+}
+#forums .forumrow.L2 > .forumdata > div > a.collapsegadget {
+	display: none;
+}
+
+/* #forums .forumrow.L2 > .forumdata > div > p.forumdescription { */
+p.forumdescription,
+p.subforumdescription,
+p.description {
+	padding  : 1ex   !important;
+	display  : flex  !important;
+	flex-wrap: wrap  !important;
+	gap      : 0.5ex !important;
+}
+p.forumdescription    a,
+p.subforumdescription a,
+p.description         a {
+	max-width: 100%;
+}
+
+#wgo {
+	display: none;
+}
+
+/**** 2, 3. Main & Sub Category List (Forum for a Lang) ****/
+
+.forumbits .forumhead > h2 > .forumlastpost {
+	display: none;
+}
+
+.forumbit_post .forumrow {
+	gap: 1ex 1em;
+	grid-template-columns: 1fr min-content 11em;
+}
+@media (max-width: 30em) { 
+	.forumbit_post .forumrow {
+		grid-template-columns: 1fr min-content;
+	}
+	.forumbit_post .forumrow > ul:nth-child(5) {
+		display: none;
+	}
+}
+
+.forumbit_post .forumrow > *.foruminfo {
+	display: flex;
+	align-items : center;
+	padding-left: 2.5rem !important;
+}
+.forumbit_nopost .forumrow > img:first-of-type,
+.forumbit_post   .forumrow > *.foruminfo > img {
+	position: absolute !important;
+	width: 2.5rem !important;
+	left : 0.5ex  !important;
+	top  : 0.3ex  !important;
+}
+.forumbits .forumbit_nopost .forumrow > .forumdata {
+	margin-left: 2.5rem !important;
+}
+.forumbit_post .forumrow > *.forumlastpost {
+	grid-column : 1/3;
+	grid-row    : 2/3;
+	box-sizing  : border-box;
+	max-width   : 100%;
+	padding-left: 2.5rem !important;
+	display     : flex;
+	flex-direction: column;
+	gap: 1ex;
+}
+.forumbit_post .forumrow > *.forumlastpost > *:nth-child(2) {
+	display  : flex;
+	flex-wrap: wrap;
+	gap      : 0.5ex 1em;
+}
+.forumbit_post .forumrow > *.forumlastpost > *:nth-child(2) > * {
+	flex: none;
+	max-width : 100%;
+	box-sizing: border-box;
+}
+.forumbit_post .forumrow > *.forumlastpost > *:nth-child(2) > p.lastposttitle {
+	flex    : 0 0 100%;
+	position: relative !important;
+}
+.forumbit_post .forumrow > *.forumlastpost > *:nth-child(2) > p.lastposttitle > a:nth-child(2) {
+	position: absolute !important;
+	left    : 0;
+	bottom  : -2.7ex;
+}
+.forumbit_post .forumrow > *.forumlastpost > *:nth-child(2) > .lastposttitle > a:nth-child(2) img {
+	width: 1.5em !important;
+}
+.forumbit_post .forumrow > *.forumlastpost > *:nth-child(2) > .lastpostby {
+	flex: none;
+	padding-left: 2em !important;
+}
+.forumbit_post .forumrow > *.forumlastpost > *:nth-child(2) > .lastpostby a.username {
+	display: block;
+	word-break: break-all !important;
+}
+
+.forumbit_post .forumrow > ul.forumactionlinks {
+	grid-column: 2/3;
+	grid-row   : 1/2;
+	display    : flex;
+	gap        : 1ex;
+}
+.forumbit_post .forumrow > ul.forumactionlinks > li{
+	width : 1.2em !important;
+	height: 1.2em !important;
+	background-size: contain;
+}
+.forumbit_post .forumrow > ul.forumactionlinks > li > a {
+	padding-left: 1.2em !important;
+}
+.forumbit_post .forumrow > ul:nth-child(5) {
+	grid-column: 3/4;
+	grid-row   : 1/3;
+	line-height: 1.5;
+}
+
+
+
+/**** Pagination ****/
+
+.threadpagenav,
+.pagination_top {
+	flex: auto;
+	position: static !important;
+	width   : auto   !important;
+	margin  : 0      !important;
+	display : flex;
+	gap     : 1ex;
+	flex-direction: column;
+	align-items   : flex-end;
+}
+.threadpagenav  *,
+.pagination_top * {
+	width  : auto !important;
+	height : auto !important;
+	margin : 0    !important;
+	padding: 0    !important;
+}
+form.pagination {
+	display  : flex;
+	flex-wrap: wrap;
+	gap      : 0.2ex;
+	justify-content: flex-end;
+}
+form.pagination > span {
+	float: none;
+}
+form.pagination > span a {
+	box-sizing: border-box;
+	position  : static  !important;
+	height    : 100%    !important;
+	padding   : 0 0.5ex !important;
+	min-width : 3.5ex;
+	display   : flex;
+	justify-content: center;
+	align-items    : center;
+}
+form.pagination > span a.popupctrl {
+	padding: 0 1em 0 1.5em !important;
+}
+form.pagination > span a img {
+	position: static !important;
+}
+form.pagination > ul label {
+	color: var(--forum-background-color);
+}
+
+
+/** Thread List Header **/
+.threadlisthead {
+	font-family: inherit !important;
+}
+.threadlisthead > div {
+	float   : none !important;
+	padding : 0.5ex 1ex;
+	display : grid !important;
+	gap     : 1em;
+	grid-template-columns: 1fr 7rem 9rem;
+}
+.threadlisthead > div * {
+	width   : auto !important;
+	margin  : 0    !important;
+	padding : 0    !important;
+}
+.threadlisthead > div > * {
+	text-align: center !important;
+}
+	
+/** Thread Row **/
+li.threadbit > div {
+	float   : none   !important;
+	position: static !important;
+	width   : calc(100% - 1em - 1ex) !important;
+	padding : 1ex 1ex 1ex 1em;
+	display : grid !important;
+	gap     : 1em;
+	grid-template-columns: 1fr 7rem 9rem;
+}
+@media (max-width: 45em) { 
+	.threadlisthead > div,
+	li.threadbit    > div {
+		grid-template-columns: 1fr 9rem;
+	}
+	.threadlisthead > div > *:nth-child(2),
+	li.threadbit    > div > *:nth-child(2) {
+		display: none;
+	}
+}
+@media (max-width: 30em) { 
+	.threadlisthead > div,
+	li.threadbit    > div {
+		grid-template-columns: 1fr;
+	}
+	.threadlisthead > div > *:nth-child(3) {
+		display: none;
+	}
+}
+li.threadbit > div * {
+	width      : auto   !important;
+	height     : auto   !important;
+	min-width  : auto   !important;
+	min-height : auto   !important;
+	margin     : 0      !important;
+	padding    : 0      !important;
+	white-space: normal !important;
+}
+li.threadbit > div > *:nth-child(4) {
+	display: none;
+}
+
+li.threadbit .threadinfo {
+	position: relative;
+	display : grid !important;
+	gap     : 1ex;
+	grid-template-columns: min-content 1fr;
+}
+li.threadbit .threadinfo a.threadstatus,
+li.threadbit .threadinfo div.crown {
+	--status-width: 2.5em;
+	position: absolute !important;
+	width : var(--status-width) !important;
+	height: var(--status-width) !important;
+	background-position: center !important;
+	background-repeat  : no-repeat;
+}
+li.threadbit .threadinfo a.threadstatus {
+	float   : none   !important;
+	position: static !important;
+}
+li.threadbit .threadinfo a.threadstatus {
+	background-size: 130%;
+}
+li.threadbit .threadinfo div.crown {
+	background-size: 135%;
+	left: -1ex !important;
+	top : -2ex !important;
+}
+li.threadbit .threadinfo > div.inner {
+	grid-row-end: span 2;
+}
+li.threadbit .threadinfo h3.threadtitle,
+li.threadbit .threadinfo h3.searchtitle {
+	margin-bottom: 0.5ex !important;
+	display: flex;
+	align-items: flex-start;
+}
+li.threadbit .threadinfo h3.threadtitle > img:first-of-type,
+li.threadbit .threadinfo h3.searchtitle > img:first-of-type {
+	flex: none;
+}
+li.threadbit .threadinfo h3.threadtitle > .prefix,
+li.threadbit .threadinfo h3.searchtitle > .prefix {
+	white-space: nowrap !important;
+}
+li.threadbit .threadinfo h3.threadtitle a:nth-last-of-type(2),
+li.threadbit .threadinfo h3.searchtitle a:nth-last-of-type(2) {
+	flex : none;
+	order: 1;
+	text-align: right;
+}
+li.threadbit .threadinfo h3.threadtitle a:nth-last-of-type(2) img,
+li.threadbit .threadinfo h3.searchtitle a:nth-last-of-type(2) img {
+	width: 1.2em !important;
+	order: 1;
+}
+li.threadbit .threadinfo h3.threadtitle a:nth-last-of-type(1),
+li.threadbit .threadinfo h3.searchtitle a:nth-last-of-type(1) {
+	flex: auto;
+}
+li.threadbit .threadinfo p.threaddesc {
+	display: none;
+}
+li.threadbit .threadinfo .author {
+	display  : flex;
+	flex-wrap: wrap;
+	gap      : 1ex;
+	justify-content: space-between;
+}
+li.threadbit .threadinfo .author > .label {
+	display  : flex;
+	flex-wrap: wrap;
+	row-gap: 0.5ex;
+	word-break: break-word;
+}
+li.threadbit .threadinfo a.username {
+	box-sizing   : border-box;
+	max-width    : calc(100% - 4.5em);
+	padding-right: 1ex !important;
+	overflow     : hidden;
+	text-overflow: ellipsis;
+}
+li.threadbit .threadinfo .threaddetails {
+	float   : none;
+	position: static;
+	display : flex;
+	align-items: flex-end;
+}
+li.threadbit .threadinfo .threaddetailicons {
+	display : flex;
+	justify-content: space-between;
+}
+li.threadbit .threadinfo .threaddetails img[src="images/misc/tag.png"],
+li.threadbit .threadinfo .threaddetails img[src="images/misc/trashcan_small.gif"] {
+	display: none;
+}
+li.threadbit .threadinfo .pagination {
+	flex   : 1 0 auto;
+	display: flex;
+	justify-content: flex-end;
+}
+li.threadbit .threadinfo .pagination dd {
+	display: flex;
+	gap    : 0.5ex;
+}
+li.threadbit .threadinfo .pagination dd a {
+	box-sizing: border-box;
+	display   : block;
+	min-width : 3ex     !important;
+	padding   : 0 0.3ex !important;
+	text-align: center;
+}
+
+ul.threadstats {
+	text-align: start !important;
+	line-height: 1.5;
+}
+ul.threadstats li:first-child {
+	display: flex;
+	gap    : 0.5ex;
+}
+ul.threadstats::after {
+	display: none;
+}
+ul.threadstats li:first-child > a:nth-child(1) {
+	flex   : 1 0 auto;
+	display: block;
+}
+ul.threadstats li:first-child > a:nth-child(1):hover {
+	text-decoration: underline;
+}
+
+
+
+dl.threadlastpost {
+	position: relative;
+	float   : none;
+	line-height: 1.25;
+}
+dl.threadlastpost::after {
+	display: none;
+}
+dl.threadlastpost > dd:nth-of-type(1) {
+	margin-left: 2.4em !important;
+}
+dl.threadlastpost > dd:nth-of-type(1) > div {
+	width: 100% !important;
+}
+dl.threadlastpost > dd:nth-of-type(1) > div > a {
+	display      : block !important;
+	white-space  : nowrap !important;
+	overflow     : hidden;
+	text-overflow: ellipsis;
+}
+dl.threadlastpost > dd:nth-of-type(2) {
+	display    : flex;
+	gap        : 1ex;
+	align-items: flex-end;
+	overflow   : visible !important;
+}
+dl.threadlastpost > dd:nth-of-type(2) > *:nth-child(1) {
+	flex : auto;
+}
+dl.threadlastpost > dd:nth-of-type(2) > *:nth-child(2) {
+	flex : 0 0 1.8em;
+	order: -1;
+}
+dl.threadlastpost > dd:nth-of-type(2) > *:nth-child(2) img {
+	width   : 1.5em !important;
+	position: absolute;
+	top     : 0.1em;
+}
+
+/** Newly Posted Thead List **/
+ol.searchbits ul.threadstats li:first-child > a:nth-child(1) {
+	flex   : none;
+	display: block;
+	margin-right: -0.5ex !important;
+}
+ol.searchbits dl.threadlastpost > dd {
+	margin-left: 0 !important;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5ex;
+}
+ol.searchbits dl.threadlastpost > dd > a:nth-child(1) {
+	max-width    : 100%;
+	overflow     : hidden;
+	text-overflow: ellipsis;
+}
+ol.searchbits dl.threadlastpost > dd > a:nth-child(2) {
+	flex : 0 0 1.8em;
+	order: -1;
+}
+ol.searchbits dl.threadlastpost > dd > a:nth-child(2) img {
+	width   : 1.5em !important;
+}
+
+@media (max-width: 30em) { 
+	dl.threadlastpost.td {
+		margin-left: 3.5em !important;
+		display  : flex   !important;
+		flex-wrap: wrap;
+		gap      : 1em;
+		justify-content: space-between;
+		align-items    : flex-start;
+	}
+	dl.threadlastpost > dd:nth-of-type(1) {
+		flex: 1 1 min-content;
+		margin-left: 2em !important;
+	}
+	dl.threadlastpost > dd:nth-of-type(1) > div > a {
+		word-break: break-all;
+	}
+	dl.threadlastpost > dd:nth-of-type(2) {
+		flex   : 0 0 max-content;
+		display: flex;
+		gap    : 1ex;
+		justify-content: flex-end;
+	}
+	dl.threadlastpost > dd:nth-of-type(2) > * {
+		flex: none;
+	}
+	dl.threadlastpost > dd:nth-of-type(2) > *:nth-child(1) {
+		flex : none;
+	}
+	dl.threadlastpost > dd:nth-of-type(2) > *:nth-child(2) {
+		order: 0;
+		position: absolute;
+		left: 0;
+	}
+	dl.threadlastpost > dd:nth-of-type(2) > *:nth-child(2) img {
+		position: static;
+	}
+
+	/** Newly Posted Thead List **/
+	ol.searchbits dl.threadlastpost > dd {
+		width: 100% !important;
+		display: grid;
+		grid-template-columns: 3em calc(100% - 7em) 1fr 1.5em;
+		gap: 1ex;
+	}
+	ol.searchbits dl.threadlastpost > dd > a:nth-child(2) {
+		order: 0;
+	}
+}
+
+
+/** Options **/
+#forum_info_options h4 {
+	margin: 0 !important;
+}
+#forum_info_options {
+	display: grid;
+	gap: 0 1em;
+	grid-template-columns: 1fr 21em;
+	grid-template-rows   : min-content 1fr;
+}
+#forum_info_options * {
+	width : auto !important;
+	height: auto !important;
+}
+#forum_info_options > :nth-child(1) {
+	grid-row   : 1;
+	grid-column: 2;
+}
+#forum_info_options > :nth-child(2) {
+	grid-row   : 2;
+	grid-column: 2;
+}
+#forum_info_options > :nth-child(3) {
+	grid-row   : 1/3;
+	grid-column: 1;
+}
+#forum_info_options > :nth-child(3) > * {
+	box-sizing: border-box;
+	width: 100% !important;
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column;
+}
+#forum_icon_legend {
+	flex: 1 0 auto;
+}
+@media (max-width: 30rem) {
+	#forum_info_options {
+		grid-template-columns: 1fr;
+		grid-template-rows   : min-content;
+	}
+	#forum_info_options > :nth-child(1) {
+		grid-row   : 1;
+		grid-column: 1;
+	}
+	#forum_info_options > :nth-child(2) {
+		grid-row   : 2;
+		grid-column: 1;
+	}
+	#forum_info_options > :nth-child(3) {
+		grid-row   : 3;
+		grid-column: 1;
+		margin: 1em 0 0 0;
+	}
+}
+
+#forum_display_options {
+	box-sizing: border-box;
+	height: 100% !important;
+	padding: 1ex;
+	display: flex;
+	flex-direction: column;
+}
+#forum_display_options::after {
+	display: none;
+}
+#forum_display_options > div {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5ex;
+}
+#forum_display_options .options_input_block {
+	padding: 0 !important;
+	display: flex;
+}
+#forum_display_options p.description {
+	display: none !important;
+}
+#forum_display_options .options_input_block > *:nth-child(1) {
+	flex: 0 0 9em;
+}
+#forum_display_options .options_input_block > *:nth-child(2) {
+	flex: 1 0 auto;
+}
+#forum_display_options select {
+	padding: 0.5ex !important;
+}
+.options_input_wrapper {
+	flex: 1 0 auto;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-end;
+}
+.options_input_block input {
+	padding: 0.5ex 1ex;
+}
+.options_input_block ul {
+	line-height: 1.5;
+}
+.options_input_block ul::after {
+	display: none;	
+}
+.options_input_block ul li {
+	display: list-item !important;
+	
+}
+
+
+.posterlist .blockrow {
+	background-color: transparent;
+}
+.posterlist .blockrow dl.stats dt {
+	color: black !important;
+}
+
+
+/**** Thread ****/
+
+#above_postlist {
+	position: relative;
+	width   : auto;
+	float   : none;
+}
+
+.postcontainer {
+	box-sizing: border-box;
+}
+.posthead {
+	box-sizing: border-box;
+	border    : none !important;
+	margin    : 0 !important;
+	padding   : 0.5ex 1ex 0.5ex 0.5ex !important;
+	display   : flex !important;
+	justify-content: space-between;
+	align-items: center;
+}
+.posthead * {
+	position: static !important;
+	width   : auto !important;
+	margin  : 0 !important;
+	padding : 0 !important;
+	font-family: sans-serif !important;
+	letter-spacing: 0.1em;
+}
+.posthead > .postdate,
+.posthead > .date    { /* Deleted Post */
+	padding: 0 0 0 3ex !important;
+	background-size: auto 100% !important;
+	background-position: 0 -0.2ex !important;
+}
+.posthead .time {
+	margin-left: 1ex !important;
+}
+.posthead .nodecontrols a {
+	display  : block;
+	min-width: 3em !important;
+}
+.postdetails {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+}
+
+.userinfo {
+	position: static !important;
+	width   : auto !important;
+	padding : 0.5rem 0.5rem !important;
+	display : grid !important;
+	grid-template-columns: 5rem 6.5rem;
+	grid-template-rows   : repeat(4, max-content) 1fr;
+	gap: 0 0.5rem;
+}
+.userinfo * {
+	width    : auto !important;
+	min-width: auto !important;
+	margin   : 0    !important;
+	padding  : 0    !important;
+	float    : none !important; 
+}
+.userinfo .username_container,
+.userinfo .usertitle,
+.userinfo .rank,
+.userinfo .userinfo_mainchar {
+	grid-column: 1/3;
+}
+
+.userinfo .username_container {
+	margin-bottom: 0.5rem !important;
+}
+.userinfo .username_container a {
+	/* width: 100% !important; */
+	max-width: none !important;
+	display: block;
+	overflow-wrap: anywhere !important;
+	line-height: 1.2;
+}
+.userinfo .usertitle {
+	margin-bottom: 0.5rem !important;
+	display: block !important;
+}
+.userinfo .rank {
+	margin-bottom: 0.4rem !important;
+	display: flex !important;
+}
+.userinfo .rank ul.repeatimg {
+	display: flex !important;
+}
+.userinfo a.postuseravatar img {
+	width    : 100% !important;
+	height   : auto !important;
+	max-width: none !important;
+}
+
+.userinfo dl::after {
+	display: none;
+}
+.userinfo dl dd {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.userinfo dl.userinfo_extra {
+	width: auto !important;
+}
+.userinfo dl.userinfo_extra dd {
+	margin-left: 1ex !important;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.userinfo dl.userinfo_mainchar {
+	width: auto !important;
+	margin-top: 1rem !important;
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	grid-template-rows   : repeat(2, min-content) 1fr;
+	gap: 0.5ex 0;
+}
+.userinfo dl.userinfo_extra dt {
+	min-width: auto;
+	text-align: justify;
+}
+.userinfo dl.userinfo_mainchar dt::after {
+	content: none !important;
+}
+.userinfo dl.userinfo_mainchar dd::before {
+	content: ":";
+	margin-right: 1ex;
+}
+.userinfo .imlinks {
+	display: none;
+}
+
+.postbody {
+	margin-left: 0 !important;
+	padding: 1em !important;
+	display: flex;
+	flex-direction : column;
+	justify-content: space-between;
+}
+.postbody .postrow {
+	font-family: inherit !important;
+	padding: 0 !important;
+	overflow: visible;
+}
+.postbody h2.title,
+.postpreview > .blocksubhead {
+	margin: 0 0 1.5em 0 !important;
+	padding: 0 0 0.5ex 0 !important;
+	border-bottom: var(--subject-separator) thin var(--forum-foreground-color);
+}
+
+/** Quotation **/
+.bbcode_container {
+	margin: 1em 0;
+	display: flex;
+	gap: 1em;
+}
+.bbcode_container > *:not(.bbcode_quote) {
+	flex: 0 0 5em;
+}
+/* Avator Icon */
+.bbcode_container > *:nth-last-child(3) img {
+	width : 100%;
+	height: auto;
+}
+/* Images in a Quotation */
+.bbcode_container > *:nth-last-child(2) img {
+	max-width : 100%;
+	max-height: 80vh;
+}
+.bbcode_container > .bbcode_quote {
+	flex: 1 1 auto;
+	margin: 0 !important;
+}
+.bbcode_container > *:last-child {
+	display: none;
+}
+.bbcode_postedby > a:last-of-type img {
+	height: 1em !important;
+	margin-left: 1ex;
+	display: inline-block;
+	background-size: contain;
+}
+
+.postbody .after_content {
+	position: static;
+}
+.postbody .after_content .likeit {
+	margin : 1em 0 0.5em 0;
+	padding: 0 !important;
+}
+.postbody .after_content .lastedited {
+	margin : 2em 0 0 0;
+	padding: 0;
+}
+.postbody div.cleardiv {
+	display: none;
+}
+
+.postfoot,
+.postfoot * {
+	float   : none   !important;
+	position: static !important;
+	margin  : 0      !important;
+	padding : 0      !important;
+	width   : auto   !important;
+}
+.postfoot .textcontrols {
+	display: flex !important;
+	flex-direction: row-reverse;
+	background-color: var(--forum-background-color) !important;
+}
+/* for Authorized Account */
+.uinfogrp11 .postfoot .textcontrols,
+.uinfogrp12 .postfoot .textcontrols,
+.uinfogrp14 .postfoot .textcontrols,
+.uinfogrp17 .postfoot .textcontrols,
+.uinfogrp18 .postfoot .textcontrols,
+.uinfogrp20 .postfoot .textcontrols {
+	background-color: #fff7e5 !important;
+}
+.postfoot .textcontrols::after {
+	display: none;
+}
+.postfoot .postcontrols {
+	flex: 1 1 auto;
+	padding: 0.8ex 1.5ex !important;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1ex 2em;
+	justify-content: flex-end;
+	align-items: center;
+	border-left: solid thin var(--forum-border-color);
+}
+.postfoot .postcontrols a {
+	position: relative !important;
+	height: 1.5em;
+	display: block !important;
+	padding-left: 1.8em !important;
+	background-size: auto 90% !important;
+	background-position: center left !important;
+	color: var(--forum-message-color) !important;
+}
+.postfoot .postcontrols a.multiquote {
+	width: 1.8em !important;
+	padding: 0 !important;
+}
+.postfoot .postcontrols .seperator {
+	display: none !important;	
+}
+.postfoot .postcontrols a > img {
+	position: absolute !important;
+	top: -0.2ex !important;
+	left: -0.4ex !important;
+}
+.postfoot .postlinking {
+	box-sizing: border-box;
+	flex: 0 0 13rem;
+	padding: 0.8ex 1.5ex !important;
+	background-color: var(--forum-bazel-color);
+}
+/* for Authorized Account */
+.uinfogrp11 .postlinking,
+.uinfogrp12 .postlinking,
+.uinfogrp14 .postlinking,
+.uinfogrp17 .postlinking,
+.uinfogrp18 .postlinking,
+.uinfogrp20 .postlinking {
+	background-color: #fae7bb !important;
+}
+.postfoot .postlinking a {
+	width: 1.8em !important;
+	height: 1.5em !important;
+}
+
+/** Signature **/
+blockquote.signature {
+	margin : 0 !important;
+	padding: 0 !important;
+	border: none;
+}
+blockquote.signature > div {
+	padding: 1rem 0 0 0 !important;
+	margin : 1rem 0 0.5rem 0 !important;
+	display: signature  !important;
+	border-top: var(--signature-separator) medium var(--forum-border-color) !important;
+}
+blockquote.signature .bbcode_quote {
+	margin-right : 0 !important;
+	margin-bottom: 0 !important;
+}
+blockquote.signature img:not(.inlineimg) {
+	if images == none {
+		display: none !important;
+	} else if images == small {
+		max-height: 2rem !important;
+		width: auto! important;
+	}
+}
+
+/** Deleted Post **/
+li.postbitdeleted {
+	background-color: var(--forum-background-color);
+}
+li.postbitdeleted .posthead {
+	height: auto !important;
+}
+li.postbitdeleted .userinfo {
+	grid-template-columns: 1fr;
+	grid-template-rows   : 2fr;
+	gap: 0.5ex;
+	border: none;
+	padding-bottom: 0 !important;
+}
+li.postbitdeleted .userinfo > *{
+	margin: 0 !important;
+}
+li.postbitdeleted .userinfo a.username {
+	display: inline-block;
+}
+li.postbitdeleted .postbody {
+	padding: 1ex !important;
+	display: block !important;
+}
+li.postbitdeleted h2.title {
+	margin: 0 !important;
+	border: none;
+	font-family: inherit !important;
+	font-weight: normal !important;
+}
+li.postbitdeleted h2.title a {
+	margin: 0 0.8ex;
+}
+li.postbitdeleted dl.deletereason {
+	display: flex;
+	gap: 1ex;
+}
+li.postbitdeleted dl.deletereason dt {
+	white-space: nowrap;
+}
+li.postbitdeleted dl.deletereason dt::after {
+	content: ":";
+}
+li.postbitdeleted .nodecontrols {
+	display: none;
+}
+
+
+/** Tag List **/
+#thread_tags_list .inner_block {
+	padding: 1em !important;
+	text-align: right;
+}
+#tag_edit_link {
+	position: static;
+	float: none !important;
+	display: inline-block !important;
+	margin: 0 0 1em 0 !important;
+	padding: 0.5ex 1em;
+}
+#tag_list_cell {
+	text-align: start;
+}
+#tag_list_cell ul.commalist {
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1ex 0.5ex;
+}
+#tag_list_cell ul.commalist li::after {
+	display: none;
+}
+#tag_list_cell ul.commalist a {
+	padding: 0.5ex 1ex;
+	display: block;
+	border: solid thin var(--forum-message-color);
+	border-radius: 1em;
+	color: var(--forum-message-color);
+	font-weight: normal !important;
+	text-decoration: none;
+}
+#tag_list_cell ul.commalist a:hover {
+	text-decoration: none;
+	background-color: var(--forum-message-color);
+	color: var(--forum-background-color);
+	transition: background-color 200ms, color 200ms;
+}
+#tag_edit_form p.label {
+	display: none;
+}
+#tag_edit_form > div {
+	display: grid !important;
+	grid-template-columns: 15em 1fr;
+	grid-template-rows   : min-content 1fr min-content;
+	gap: 1em 2em;
+	border: none;
+}
+#tag_edit_form > div > * {
+	padding: 0 !important;
+}
+#tag_edit_form > div > :nth-last-child(4) {
+	grid-row   : 1/3;
+	height: auto;
+}
+#tag_edit_form > div > :nth-last-child(3) {
+	grid-column: 2;
+	grid-row   : 2;
+	margin: 0 0 0 1em;
+	background-color: transparent;
+	border: none;
+	font-weight: normal;
+	line-height: 1.5;
+}
+#tag_edit_form > div > :nth-last-child(2) {
+	grid-column: 2;
+	height: auto !important;
+	display: flex;
+	gap: 1ex;
+	flex-direction: column;
+}
+#tag_edit_form > div > :nth-last-child(2)::after {
+	display: none;
+}
+#tag_edit_form > div > :nth-last-child(2) label {
+	float: none;
+	font-weight: bold;
+	width: auto;
+}
+#tag_edit_form > div > :nth-last-child(2) > div,
+#tag_edit_form > div > :nth-last-child(2) > p.singledescription {
+	margin: 0 0 0 1em !important;
+	line-height: 1.5;
+}
+#tag_edit_form > div > :last-child {
+	grid-column: 1/3;
+	margin: 0;
+}
+@media (max-width: 30rem) {
+	#tag_edit_form > div {
+		grid-template-columns: 1fr;
+		grid-template-rows   : repeat(4, min-content);
+	}
+	#tag_edit_form > div > :nth-last-child(4) {
+		grid-row   : 1;
+		grid-column: 1;
+	}
+	#tag_edit_form > div > :nth-last-child(3) {
+		grid-row   : 3;
+		grid-column: 1;
+	}
+	#tag_edit_form > div > :nth-last-child(2) {
+		grid-row   : 2;
+		grid-column: 1;
+	}
+	#tag_edit_form > div > :nth-last-child(1) {
+		grid-row   : 4;
+		grid-column: 1;
+	}
+}
+
+ul#tag_edit_list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.8ex;
+}
+ul#tag_edit_list li {
+	margin: 0;
+}
+ul#tag_edit_list label {
+	float: none;
+	display: flex;
+	gap: 0.5ex;
+	align-items: center;
+}
+#tag_edit_form p.singledescription {
+	margin: 2ex 0 0 0 !important;
+	line-height: 1.5;
+}
+#tag_edit_form > div > * {
+	padding: 0 !important;
+}
+#tag_edit_form .actionbuttons .group {
+	max-width: none;
+}
+#tagpopup_ctrl {
+	width: 100% !important;
+}
+#thread_tags_list .inner_block > p {
+	margin: 1em 0 0 0;
+}
+
+
+/**** Editors ****/
+
+.postpreview + .actionbuttons {
+	display: none;
+}
+form.vbform {
+	max-width : 100% !important;
+	margin    : 0;
+	box-sizing: border-box;
+}
+form.vbform .blockhead {
+	padding: 0.5ex 1.5ex !important;
+}
+form.vbform .section {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+	
+}
+#vbEditor > * {
+	padding: 1em !important;
+}
+#vbEditor .section > div {
+	padding: 0ex;
+}
+#vbEditor .section > div::after {
+	display: none !important;
+}
+
+/* Layout of Title, Reason for Editing, and Tags */
+.quickedit > *:nth-child(2),
+#vbEditor .section > div:nth-of-type(3):last-child,
+#vbEditor .section > div:nth-last-of-type(4),
+#vbEditor .section > div:nth-last-of-type(3),
+#vbEditor .section > div:nth-last-of-type(2):first-child {
+	border : none !important;
+	padding: 0 !important;
+	display: flex;
+	gap    : 0.5ex 1ex;
+	flex-wrap  : wrap;
+	align-items: center;
+}
+
+/* Title */
+#vbEditor .section > div:nth-last-of-type(3) p,
+#vbEditor .section > div:nth-last-of-type(3) img,
+#vbEditor .section > div:nth-last-of-type(2):first-child img {
+	display: none !important;
+}
+#vbEditor .section > div:nth-last-of-type(3)             label,
+#vbEditor .section > div:nth-last-of-type(2):first-child label,
+#vbEditor .section > div:nth-of-type(3):last-child       label {
+	width : auto;
+	margin: 0;
+	font-weight: bold;
+}
+#vbEditor .section > div:nth-last-of-type(3)             input,
+#vbEditor .section > div:nth-last-of-type(2):first-child input,
+#vbEditor .section > div:nth-of-type(3):last-child div        ,
+#vbEditor .section > div:nth-of-type(3):last-child div   input {
+	width : 100%;
+	height: auto;
+}
+
+.editor {
+	display: flex;
+	gap    : 1ex;
+	flex-direction: column;
+}
+.editor_controls {
+	padding: 0;
+	display: grid;
+	gap: 1ex;
+	grid-template-columns: 1fr max-content;
+}
+.editor_controls                 > ul > li,
+.editor_controls > *:first-child > ul > li {
+	display: flex;
+	flex-direction: row-reverse;
+}
+.editor_controls > *:nth-child(2) {
+	grid-row   : 1/2;
+	grid-column: 1/2;
+}
+.editor_controls > *:nth-child(3) {
+	grid-column: 1/3;
+}
+.editor_textbox_container,
+.editor_textbox_container > * {
+	margin: 0 !important;
+}
+.editor_textbox textarea,
+.editor_textbox iframe {
+	box-sizing: border-box;
+	width     : 100% !important;
+	min-height: 15em !important;
+	max-width : none !important;
+	min-width : auto !important;
+	padding   : 0.5ex 1ex;
+	resize    : vertical;
+}
+.editor_smiliebox {
+	width  : auto !important;
+	height : auto !important;
+	padding: 0;
+}
+.editor_smiliebox ul {
+	height   : auto !important;
+	display  : flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+}
+.editor_smiliebox ul > * {
+	flex: 0 0 3ex;
+}
+.editor_smiliebox::after,
+.editor_smiliebox ul::after {
+	display: none !important;
+}
+
+
+
+/** Tags of New Thread **/
+#vbEditor .section > div:nth-of-type(3):last-child > p {
+	margin: 0 !important;
+}
+
+
+/** Quick Revising **/
+.quickedit {
+	padding: 1em;
+	display: flex;
+	gap    : 1em;
+	flex-direction: column;
+}
+.quickedit > * {
+	padding: 0 !important;
+}
+
+/* Looks of Reason for Editing */
+.quickedit > *:nth-child(2)::after,
+#vbEditor .section > div:nth-last-of-type(4)::after {
+	display: none;
+}
+.quickedit > *:nth-child(2) > label,
+#vbEditor .section > div:nth-last-of-type(4) > label {
+	width : auto;
+	margin: 0;
+	font-weight: bold;
+}
+.quickedit > *:nth-child(2) > p,
+#vbEditor .section > div:nth-last-of-type(4) > p {
+	order: -1;
+	max-width  : none;
+	margin     : 0 !important;
+	padding    : 0 !important;
+	line-height: 1;
+	font-weight: bold;
+}
+.quickedit > *:nth-child(2)                  > p::before,
+#vbEditor .section > div:nth-last-of-type(4) > p::before {
+	content: "(";
+}
+.quickedit > *:nth-child(2)                  > p::after,
+#vbEditor .section > div:nth-last-of-type(4) > p::after {
+	content: ")";
+}
+.quickedit > *:nth-child(2)                  > div,
+#vbEditor .section > div:nth-last-of-type(4) > div {
+	flex: 1 0 100%;
+}
+.quickedit > *:nth-child(2)                  > div input,
+#vbEditor .section > div:nth-last-of-type(4) > div input {
+	width : 100% !important;
+	height: auto!important;
+}
+
+/* Quick Deleting */
+#quickedit_delete {
+	margin: 1em 0 0 0;
+}
+#quickedit_delete > * {
+	padding: 1em 0 0 0 !important;
+}
+#quickedit_delete p {
+	margin: 0;
+}
+#quickedit_delete > div > dl > dt {
+	font-weight: bold;
+}
+#quickedit_delete label {
+	display: inline !important;
+}
+#quickedit_delete input.textbox {
+	width: 100%;
+}
+#quickedit_delete .actionbuttons {
+	margin : 0 !important;
+	padding: 1em 0 0 0 !important
+}
+
+
+/* Revising */
+#vbEditor .section > div:nth-last-of-type(4) {
+	order: 2; /* Move reason to bottom. */
+	padding: 0;
+}
+#vbEditor .section > div:nth-last-of-type(2):nth-of-type(3) {
+	/* message about the author and the posted date  */
+	order  : -1; /* move to top */
+	height : auto;
+	border : none;
+	display: flex;
+	gap    : 0.5ex;
+	flex-wrap: wrap;
+}
+
+/** Options **/
+form.vbform > h3 + div .section {
+	padding: 1ex;
+	display: flex;
+	gap    : 1ex;
+	flex-direction: column;
+}
+form.vbform > h3 + div .section > * {
+	padding: 0;
+	display: flex;
+	gap    : 1ex;
+	flex-direction: column;
+}
+form.vbform > h3 + div .section > *::after {
+	display: none;
+}
+form.vbform > h3 + div .section > * > label {
+	flex: 0 1 auto;
+	width: auto;
+	margin: 0;
+	font-weight: bold;
+}
+form.vbform > h3 + div .section > * > ul {
+	flex: 1 1 auto;
+	width: auto;
+	margin: 0 0 0 2em;
+	line-height: 2;
+}
+form.vbform > h3 + div .section > * > ul li {
+	margin: 0 !important;
+}
+form.vbform > h3 + div .section > fieldset {
+	padding: 1ex 0 0 0;
+	border : none;
+}
+form.vbform > h3 + div .section > fieldset > dl {
+	margin: 0 0 0 2em;
+}
+form.vbform > h3 + div .section > fieldset > dl dt {
+	display: flex;
+	gap    : 1ex;
+}
+form.vbform > h3 + div .section > fieldset > dl dt > label {
+	order: 1;
+}
+
+
+/** Preview **/
+.postpreview {
+	padding: 1em;
+}
+.postpreview > * {
+	padding: 0;
+}
+.postpreview > .blocksubhead {
+	margin: 0 0 1.5em 0 !important;
+	padding: 0 0 0.5ex 0 !important;
+	border-top: none;
+	background-color: transparent !important;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+#nrreview .postbit {
+	padding: 1ex !important;
+}
+#nrreview .postbit > .header {
+	margin-bottom: 1ex;
+	display: flex;
+	gap    : 1ex;
+	justify-content: space-between;
+}
+#nrreview .postbit > .header > .username {
+	order: -1;
+	flex : 1 1 auto;
+	font-weight: bold;
+	overflow-wrap: anywhere;
+}
+#nrreview .postbit > .header > .datetime {
+	flex: none;
+	white-space: nowrap;
+}
+
+
+
+/**** Reporting Violation ****/
+
+form[action="report.php?do=sendemail"] {
+	width: var(--view-width);
+}
+form[action="report.php?do=sendemail"] > div {
+	padding: 1em;
+}
+form[action="report.php?do=sendemail"] .section,
+form[action="report.php?do=sendemail"] .section > div {
+	padding: 0;
+}
+form[action="report.php?do=sendemail"] label {
+	display: none !important;
+}
+form[action="report.php?do=sendemail"] textarea {
+	width: 100% !important;
+	min-height: 8em !important;
+	resize: vertical;
+}
+form[action="report.php?do=sendemail"] p.description {
+	margin : 1em 0 0 0 !important;
+	padding: 0 !important;
+	display: block !important;
+}
+form[action="report.php?do=sendemail"] strong {
+	font-weight: bold;
+}
+form[action="report.php?do=sendemail"] .actionbuttons {
+	margin : 1em 0 2em 0;
+	padding: 0;
+}
+
+
+
+/**** Advanced Search ****/
+
+/* Tags */
+#searchtypeswitcher {
+	height: auto !important;
+	display: flex;
+	border: none !important;
+}
+#searchtypeswitcher::after {
+	display: none;
+}
+#searchtypeswitcher * {
+	float: none !important;
+}
+#searchtypeswitcher li {
+	display: block !important;
+}
+#searchtypeswitcher li a {
+	margin: 0;
+}
+#searchtypeswitcher li.selected a {
+	background-color: var(--forum-message-color) !important;
+	border-color: var(--forum-border-color);
+	border-width: 1px !important;
+}
+
+/* Conditions */
+#searchtypes        h3,
+#vb_search_params   h3,
+#searchform > div > h3 {
+	border: none !important;
+}
+#searchtypes        .section,
+#vb_search_params   .section,
+#searchform > div > .section {
+	padding: 1em;
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+#searchtypes      *::after,
+#vb_search_params *::after,
+#searchform > div > .section *::after {
+	display: none;
+}
+
+#searchtypes        .section > div,
+#vb_search_params   .section > div,
+#searchform > div > .section > div {
+	padding: 0 !important;
+	display: flex !important;
+	flex-direction: column;
+	border: none;
+}
+#searchtypes      .blockrow > label,
+#vb_search_params .blockrow > label,
+#searchform > div > .section > .blockrow > label {
+	margin: 0 0 1ex 0 ;
+	font-weight: bold;
+}
+#searchtypes      .blockrow > :not(:first-child),
+#vb_search_params .blockrow > :not(:first-child),
+#searchform > div > .section > .blockrow > :not(:first-child) {
+	margin: 0 0 0 1em;
+}
+#vb_search_params ul.multifield,
+#searchform > div > .section ul.multifield {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1ex;
+}
+#vb_search_params ul.multifield li,
+#vb_search_params ul.multifield li label,
+#vb_search_params ul.checkradio,
+#searchform > div > .section ul.multifield li {
+	margin: 0;
+}
+#searchform > div.section > div:nth-of-type(2) > ul li:nth-child(3) {
+	width: 100% !important;
+}
+
+#tag_add,
+#searchform label[for="keyword"   ] + ul.multifield li,
+#searchform label[for="searchuser"] + ul.multifield li {
+	width: 16rem;
+}
+#tag_add input,
+#searchform label[for="searchuser"] + ul.multifield input[type="text"],
+#searchform label[for="keyword"   ] + ul.multifield input[type="text"],
+#searchform label[for="keyword"   ] + ul.multifield select,
+#vb_search_params div.section:nth-of-type(1) li select {
+	width: 100%;
+}
+
+#vb_search_params .actionbuttons:nth-child(3),
+#searchform > div > .actionbuttons:nth-child(5) {
+	margin: 0 1em 1em 1em;
+}
+
+#additionaloptions label[for="forumchoice"] + ul {
+	flex-direction: column;
+}
+#additionaloptions .actionbuttons {
+	margin: 1em 0 0 0;
+	flex-direction: row !important;
+	justify-content: space-between;
+	align-content: center;
+	
+}
+#additionaloptions .actionbuttons > * {
+	margin: 0;
+	width: auto !important;
+}
+#additionaloptions input.button {
+	padding: 0.5ex 1em;
+}
+#additionaloptions input[type="image"] {
+	display: none;
+}
+#forumchoice {
+	width: 16rem;
+}
+
+#searchform > div > .section:nth-of-type(2) > div:nth-child(2) li:nth-child(2) {
+	width: 100% !important;
+}
+ul#searchtypelist {
+	width: auto !important;
+	max-width: none !important;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5ex;
+}
+ul#searchtypelist li {
+	float: none;
+	width: auto !important;
+}
+
+
+
+/**** Tag Search ****/
+
+#tag_search .blockbody > div {
+	padding: 1em;
+}
+#tag_search label {
+	display: none;
+}
+#tag_search .blockbody input {
+	width: 100% !important;
+	margin: 0;
+}
+#tag_search .blockbody p {
+	margin: 1ex 0 0;
+	padding: 0 !important;
+}
+
+
+
+/**** Search Result ****/
+
+.searchresults .posthead {
+	padding: 0.5ex 1em !important;
+}
+.searchresults .postdate {
+	padding: 0 !important;
+}
+.searchresults .userinfo_noavatar {
+	box-sizing: border-box;
+	padding: 0.5ex 1em;
+	display: grid;
+	grid-template-columns: 1fr max-content;
+	gap: 1em;
+}
+.searchresults .contact {
+	width: auto !important;
+}
+.searchresults .username_container {
+	margin: 0 !important;
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	gap: 0.8ex 0;
+}
+.searchresults .username_container h2 {
+	grid-column: 1/3;
+}
+.searchresults .username_container > a {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.searchresults .username_container > a::before {
+	content: ":";
+	margin: 0 1ex 0 0;
+}
+.searchresults .userinfo_extra {
+	width: auto !important;
+	text-align: start !important;
+}
+.searchresults .userstats {
+	width: auto !important;
+	margin: 0 !important;
+	display: grid;
+	grid-template-columns: max-content 7em;
+	gap: 0.5ex;
+}
+.searchresults .userstats::after {
+	display: none;
+}
+.searchresults .userstats dt {
+	margin: 0 !important;
+}
+.searchresults .userstats dt::after {
+	display: none;
+}
+.searchresults .userstats dd::before {
+	content: ":";
+	margin-right: 1ex;
+}
+.searchresults .postbody h3 {
+	padding: 0 0 1em 0;
+}
+
+} /* End */
+
+
+
+
+/**** Logined ****/
+
+@-moz-document url-prefix("https://forum.square-enix.com/ffxiv/register") {
+body {
+	box-sizing: border-box;
+	min-height: 100vh;
+	padding: 1em;
+}
+.standard_error {
+	width: var(--max-body-width);
+	max-width: 100% !important;
+}
+h2,
+.blockbody,
+.redirect_button {
+	box-sizing: border-box;
+	width: var(--view-width) !important;
+	max-width: 100% !important;
+	margin: 0 auto;
+}
+.blockbody {
+	padding: 1em;
+}
+p {
+	padding: 0 !important;
+}
+.redirect_button {
+	margin-top: 3em;
+	padding: 0 !important;
+}
+.redirect_button a {
+	padding: 1ex;
+	display: block !important;
+	font-size: small !important;
+	font-weight: normal;
+	text-align: center;
+}
+} /* End of Login Page */
+
+
+
+@-moz-document url-prefix("https://forum.square-enix.com/ffxiv/threads/") {
+if authorDisplayMode == compact {
+	.postbody {
+		border: none !important;
+	}
+	.postdetails {
+		grid-template-columns: 1fr;
+	}
+	.userinfo {
+		grid-template-columns: 3.5em 1fr max-content;
+		grid-template-rows: 1fr;
+		gap: 1ex;
+	}
+	.userinfo .usertitle,
+	.userinfo .rank,
+	.userinfo dl.userinfo_mainchar {
+		display: none !important;
+	}
+	.userinfo .username_container {
+		margin: 0 !important;
+		grid-column: 2;
+		grid-row   : 1;
+		font-size: 12px !important;
+	}
+	.userinfo .username_container > div > a {
+		font-size: 16px !important;
+	}
+	.userinfo a.postuseravatar {
+		margin: 0 !important;
+		grid-column: 1;
+		grid-row   : 1;
+	}
+
+	.userinfo dl.userinfo_extra {
+		display: grid;
+		grid-template-columns: max-content max-content;
+		align-items: center !important;
+		font-size: 10px !important;
+	}
+	.userinfo dl.userinfo_extra dt {
+		margin-right: 0 !important;
+	}
+	.userinfo dl.userinfo_extra dt::after {
+		content: none;
+	}
+	.userinfo dl.userinfo_extra dd {
+		margin-left: 0 !important;
+	}
+	.userinfo dl.userinfo_extra dd::before {
+		content: ":";
+		margin-right: 1ex;
+	}
+	/*
+	.userinfo dl.userinfo_extra {
+		margin: 0 !important;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		align-items: flex-start;
+	}
+	.userinfo dl.userinfo_extra * {
+		flex: none;
+	}
+	.userinfo dl.userinfo_extra dd {
+		margin-left: 0.5ex !important;
+	}
+	.userinfo dl.userinfo_extra dt:nth-of-type(1) {
+		margin-left: 1.5em !important;
+	}
+	.userinfo dl.userinfo_extra dt:nth-of-type(1),
+	.userinfo dl.userinfo_extra dd:nth-of-type(1) {
+		order: 1;
+	}
+	*/
+	.userinfo dl.userinfo_extra dt:nth-of-type(2):nth-last-of-type(2),
+	.userinfo dl.userinfo_extra dd:nth-of-type(2):nth-last-of-type(2) {
+		display: none;
+	}
+
+	.bbcode_container > *:not(.bbcode_quote) {
+		flex: 0 0 3em;
+	}
+
+	.postfoot .postcontrols {
+		border: none;
+	}
+	.postfoot .postlinking {
+		flex: 1 0 2rem;
+		background-color: var(--forum-background-color);
+	}
+
+} else {
+	if authorDisplayMode == simple {
+		.userinfo .usertitle {
+			display: none !important;
+		}
+		.userinfo .rank {
+			display: none !important;
+		}
+		.userinfo dl.userinfo_mainchar {
+			display: none;
+		}
+	}
+
+	@media (max-width: 35em) {
+
+		.postbody {
+			border: none !important;
+		}
+		.postdetails {
+			grid-template-columns: 1fr;
+		}
+		.userinfo {
+			grid-template-columns: 3.5em 1fr max-content;
+			grid-template-rows: 1fr;
+			gap: 1ex;
+		}
+		.userinfo .usertitle,
+		.userinfo .rank,
+		.userinfo dl.userinfo_mainchar {
+			display: none !important;
+		}
+		.userinfo .username_container {
+			margin: 0 !important;
+			grid-column: 2;
+			grid-row   : 1;
+			font-size: 12px !important;
+		}
+		.userinfo .username_container > div > a {
+			font-size: 16px !important;
+		}
+		.userinfo a.postuseravatar {
+			margin: 0 !important;
+			grid-column: 1;
+			grid-row   : 1;
+		}
+
+		.userinfo dl.userinfo_extra {
+			display: grid;
+			grid-template-columns: max-content max-content;
+			align-items: center !important;
+			font-size: 10px !important;
+		}
+		.userinfo dl.userinfo_extra dt {
+			margin-right: 0 !important;
+		}
+		.userinfo dl.userinfo_extra dt::after {
+			content: none;
+		}
+		.userinfo dl.userinfo_extra dd {
+			margin-left: 0 !important;
+		}
+		.userinfo dl.userinfo_extra dd::before {
+			content: ":";
+			margin-right: 1ex;
+		}
+		/*
+		.userinfo dl.userinfo_extra {
+			margin: 0 !important;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: flex-end;
+			align-items: flex-start;
+		}
+		.userinfo dl.userinfo_extra * {
+			flex: none;
+		}
+		.userinfo dl.userinfo_extra dd {
+			margin-left: 0.5ex !important;
+		}
+		.userinfo dl.userinfo_extra dt:nth-of-type(1) {
+			margin-left: 1.5em !important;
+		}
+		.userinfo dl.userinfo_extra dt:nth-of-type(1),
+		.userinfo dl.userinfo_extra dd:nth-of-type(1) {
+			order: 1;
+		}
+		*/
+		.userinfo dl.userinfo_extra dt:nth-of-type(2):nth-last-of-type(2),
+		.userinfo dl.userinfo_extra dd:nth-of-type(2):nth-last-of-type(2) {
+			display: none;
+		}
+
+		.bbcode_container > *:not(.bbcode_quote) {
+			flex: 0 0 3em;
+		}
+
+		.postfoot .postcontrols {
+			border: none;
+		}
+		.postfoot .postlinking {
+			flex: 1 0 2rem;
+			background-color: var(--forum-background-color);
+		}
+	}
+}
+} /* End of Thread Page */
+
+
+
+@-moz-document url-prefix("https://forum.square-enix.com/ffxiv/newthread") {
+	.body_bound {
+		width: calc(var(--view-width) + 2rem);
+	}
+
+	if preview == right {
+		@media (min-width: 40em) { 
+			.body_bound {
+				width    : 100%;
+			}
+			form.vbform {
+				width  : auto !important;
+				display: grid;
+				gap    : 0 1em;
+				grid-template-columns: repeat(2, var(--preview-column-width));
+			}
+			form.vbform > h2:nth-last-of-type(2) {
+				grid-column: 2;
+			}
+			form.vbform > *.postpreview {
+				grid-column: 2;
+				grid-row   : 2/7;
+			}
+			form.vbform > *:nth-last-child(6) {
+				margin  : 0 !important;
+				grid-row: 1;
+			}
+			form.vbform > *:nth-last-child(5),
+			form.vbform > *:nth-last-child(4),
+			form.vbform > *:nth-last-child(3),
+			form.vbform > *:nth-last-child(2),
+			form.vbform > *:nth-last-child(1) {
+				grid-column: 1;
+			}
+		}
+	}
+}
+
+
+
+
+@-moz-document url-prefix("https://forum.square-enix.com/ffxiv/newreply") {
+.body_bound {
+	width: calc(var(--view-width) + 2rem);
+}
+
+if preview == right {
+	@media (min-width: 40em) { 
+		.body_bound {
+			width    : 100%;
+		}
+		form.vbform {
+			width  : auto !important;
+			display: grid;
+			gap    : 0 1em;
+			grid-template-columns: repeat(2, var(--preview-column-width));
+		}
+		form.vbform > h2:nth-last-of-type(2) {
+			grid-column: 2;
+		}
+		form.vbform > *.postpreview {
+			grid-column: 2;
+			grid-row   : 2/8;
+		}
+		form.vbform > *:nth-last-child(7) {
+			margin: 0 !important;
+			grid-row   : 1;
+		}
+		form.vbform > *:nth-last-child(6),
+		form.vbform > *:nth-last-child(5),
+		form.vbform > *:nth-last-child(4),
+		form.vbform > *:nth-last-child(3),
+		form.vbform > *:nth-last-child(2),
+		form.vbform > *:nth-last-child(1) {
+			grid-column: 1;
+		}
+	}
+}
+
+}
+
+
+
+@-moz-document url-prefix("https://forum.square-enix.com/ffxiv/editpost") {
+.body_bound {
+	width: calc(var(--view-width) + 2rem);
+	display: flex;
+	flex-direction: column;
+}
+.body_wrapper {
+	display: flex;
+	flex-direction: column;
+}
+div.clear {
+	display: none !important;
+}
+form.vbform {
+	margin-top: 2em;
+}
+form:first-of-type:nth-last-of-type(2) {
+	order: 1;
+}
+form:first-of-type:nth-last-of-type(2) .blockbody h3 {
+	padding: 1em;
+}
+form:first-of-type:nth-last-of-type(2) .blockbody div {
+	padding: 1em;
+}
+form:first-of-type:nth-last-of-type(2) .blockbody div div {
+	padding: 0;
+}
+form:first-of-type:nth-last-of-type(2) label,
+form:first-of-type:nth-last-of-type(2) input.textbox {
+	width: 100% !important;
+}
+form.vbform + br {
+	display: none;
+}
+#footer {
+	order: 2;
+}
+
+if preview == right {
+	@media (min-width: 40em) { 
+		.body_bound {
+			width    : 100%;
+		}
+		.body_wrapper {
+			display: grid;
+			gap    : 0 1em;
+			grid-template-columns: repeat(2, var(--preview-column-width));
+		}
+		.body_wrapper > #breadcrumb {
+			grid-row   : 1;
+			grid-column: 1/3;
+		}
+		.body_wrapper > #pagetitle {
+			grid-row   : 2;
+			grid-column: 1/3;
+		}
+		.body_wrapper > h2 {
+			grid-column: 2;
+		}
+		.body_wrapper > div.postpreview {
+			grid-column: 2;
+			grid-row: 4/6;
+		}
+		.body_wrapper > form:last-of-type {
+			grid-row   : 3/5;
+			margin-top: 0;
+		}
+		.body_wrapper > form:first-of-type:nth-last-of-type(2) {
+			grid-row   : 5;
+		}
+		.body_wrapper > *:nth-last-child(1) {
+			grid-column: 1/3;
+		}
+		.standard_error {
+			grid-column: 1/3;
+			width: var(--view-width);
+			margin-right: auto !important;
+		}
+		div#navpopup {
+			grid-column: 1/3;
+			margin: 0 0 0 auto !important;
+		}
+	}
+}
+
+} /* End of Edit */
+
+
+
+/**** Settings ****/
+
+@-moz-document url-prefix("https://forum.square-enix.com/ffxiv/usercp"),
+url-prefix("https://forum.square-enix.com/ffxiv/subscription"),
+url-prefix("https://forum.square-enix.com/ffxiv/profile") {
+
+	.body_wrapper {
+		display: grid !important;
+		gap    : 0.5rem;
+		grid-template-columns: 12rem 1fr;
+	}
+	#breadcrumb {
+		grid-column: 1/3;
+		margin: 0;
+	}
+	#usercp_nav {
+		grid-row   : 2;
+		grid-column: 1;
+		width: auto !important;
+		margin : 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	#usercp_nav > * {
+		margin : 0 !important;
+		padding: 0 !important
+	}
+	#usercp_nav > *:first-child {
+		order: 2;
+	}
+	#usercp_nav hr {
+		border: none;
+		width: calc(100% - 2ex);
+	}
+	#usercp_content {
+		grid-row   : 2;
+		grid-column: 2;
+		margin : 0;
+		padding: 0;
+	}
+	#footer {
+		grid-row   : 3;
+		grid-column: 1/3;
+		width: auto !important;
+		margin: 0;
+	}
+	#usercp_content .clear {
+		display: none;
+	}
+	#usercp_content .cp_content {
+		float   : none   !important;
+		position: static !important;
+		margin  : 0      !important;
+		padding : 0      !important;
+		width   : auto   !important;
+		height  : auto   !important;
+	}
+
+	@media (max-width: 35rem) {
+		.body_wrapper {
+			gap: 1rem;
+		}
+		#usercp_content {
+			grid-row   : 3;
+			grid-column: 1/3;
+		}
+		#usercp_nav {
+			grid-row   : 2;
+			grid-column: 1/3;
+			flex-direction: row;
+			gap: 0.5rem;
+		}
+		#usercp_nav > *:first-child ul:first-of-type {
+			display: flex;
+			flex-wrap: wrap;
+		}
+		#usercp_nav > *:last-child {
+			flex: 0 0 max-content;
+		}
+		#footer {
+			grid-row   : 4;
+			grid-column: 1/3;
+		}
+	}
+
+	#usercp_content form {
+		margin: 0 !important;
+	}
+	#usercp_content h2.blockhead {
+		padding: 0.5ex 1em !important;
+	}
+	#usercp_content h3.blocksubhead {
+		padding: 1ex 1em !important;
+	}
+	#usercp_content input,
+	#usercp_content textarea,
+	#usercp_content select {
+		padding: 0.5ex 1ex !important;
+	}
+	#usercp_content .actionbuttons input.button {
+		padding: 0.5ex 1em !important;
+	}
+	#usercp_content .actionbuttons {
+		margin: 1em 0 0 0 !important;
+	}
+
+	/** Newly Posted Threads **/
+	#new_subscribed_threads {
+		margin: 0 !important;
+	}
+	#new_subscribed_threads ol li > div {
+		margin: 0 !important;
+		grid-template-columns: 1fr 9rem;
+	}
+	#new_subscribed_threads .author .label {
+		width: 100% !important;
+	}
+	#new_subscribed_threads .textpad {
+		margin : 1em 0 0 0;
+		padding: 0 !important;
+	}
+	#new_subscribed_threads .textpad a {
+		display: inline-block;
+		padding: 1ex 1em !important;
+	}
+	@media (max-width: 30rem) {
+		#new_subscribed_threads ol li > div {
+			margin: 0 !important;
+			grid-template-columns: 1fr;
+		}
+		#new_subscribed_threads ol li > div > ul.threadstats {
+			display: none !important;
+		}
+	}
+
+	/** Editing My Characters **/
+	form#charlist ul.charlist::after {
+		display:none;
+	}
+	form#charlist ul.charlist > li.charskill.set {
+		width  : auto  !important;
+		height : auto  !important;
+		display: block !important;
+	}
+	form#charlist ul.charlist > li:nth-of-type(7),
+	form#charlist ul.charlist > li:nth-of-type(8),
+	form#charlist ul.charlist > li:nth-of-type(9) {
+		margin-left: 1ex !important;
+	}
+	form#charlist ul.charlist li.charskill.set > div:nth-child(1) {
+		display: none !important;
+	}
+	form#charlist ul.charlist li.charskill.set > div:nth-child(2) {
+		position: relative !important;
+	}
+	form#charlist ul.charlist li.charskill.set > div:nth-child(2) > div.ddTitle {
+		width  : 5.5em !important;
+		height : 1.8em !important;
+		display: flex !important;
+		justify-content: space-between;
+		align-items: center;
+	}
+	form#charlist ul.charlist li.charskill.set > div:nth-child(2) > div.ddTitle > span.arrow {
+		flex  : 0 0 auto;
+		order : 2;
+		width : 1.5em !important;
+		height: 1.5em !important;
+		background-size: 100% auto;
+	}
+	form#charlist ul.charlist li.charskill.set > div:nth-child(2) > div.ddTitle > span.ddTitleText {
+		flex   : 0 0 3.6em;
+		height : 100% !important;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		text-indent: 0;
+		line-height: 1;
+	}
+	form#charlist ul.charlist li.charskill.set > div:nth-child(2) > div.ddTitle > span.ddTitleText > img {
+		flex  : none;
+		width : auto !important;
+		height: 100% !important;
+	}
+	form#charlist ul.charlist li.charskill.set > div:nth-child(2) > div.ddTitle > span.ddTitleText > span {
+		flex: none;
+	}
+	form#charlist ul.charlist li.charskill.set > div:nth-child(2) > div.ddChild {
+		position: absolute !important;
+		top     : 100% !important;
+		left    : 0    !important;
+		width   : 100% !important;
+	}
+	form#charlist ul.charlist li.charskill.set > div:nth-child(2) > div.ddChild a span {
+		display: inline-block;
+		width  : 1.6em !important;
+		text-align: end;
+	}
+
+
+	/** Favorate Threads **/
+	#usercp_content li.threadbit > div {
+		grid-template-columns: 1fr 9rem min-content;
+	}
+	#usercp_content .threadlisthead > *:nth-child(4),
+	#usercp_content ol#threads > li > div > *:nth-child(3) {
+		display: none;
+	}
+	#usercp_content .threadlisthead {
+		box-sizing: border-box;
+		position  : static !important;
+		width  : 100%;
+		padding: 0.5ex 1ex 0.5ex 1em;
+		display: grid;
+		grid-template-columns: 1fr 9rem min-content;
+	}
+	@media (max-width: 45em) { 
+		#usercp_content .threadlisthead ,
+		#usercp_content li.threadbit > div {
+			grid-template-columns: 1fr min-content;
+		}
+		#usercp_content .threadlisthead > *:nth-child(3),
+		#usercp_content ol#threads > li > div > *:nth-child(2) {
+			display: none !important;
+		}
+	}
+	#usercp_content .threadlisthead > * {
+		position: static !important;
+		float: none !important;
+		width: 100%;
+		padding: 0 !important;
+		white-space: nowrap;
+		text-align: center;
+	}
+	#usercp_content li.threadbit > div > :nth-child(4),
+	#usercp_content li.threadbit > div > :nth-child(4) input {
+		display: block;
+		position: static !important;
+	}
+	#jump-to-folder {
+		position: static !important;
+		margin: 0 0 1ex 0;
+	}
+	#jump-to-folder > *:last-child {
+		width: 10em !important;
+		display: none;
+	}
+
+	/** Editing Profile **/
+
+	form#profileform p:empty {
+		display: none !important;
+	}
+	form#profileform div.section {
+		padding: 1em !important;
+	}
+	form#profileform div.section > div {
+		display: grid;
+		gap    : 1ex 0;
+		grid-template-columns: 10em 1fr;
+		border: none;
+	}
+	form#profileform div.section > div::after {
+		display: none;
+	}
+	form#profileform div.section > div + div {
+		margin-top: 1ex !important;
+	}
+	form#profileform div.section > div > div {
+		max-width: none !important;
+	}
+	form#profileform div:nth-of-type(1) > div > div ul {
+		display: flex;
+	}
+	form#profileform div:nth-of-type(1) > div > div ul {
+		display: flex;
+		gap : 1ex;
+	}
+	select#bd_month {
+		width: 8em !important;
+	}
+	select#bd_day   {
+		width: 4em !important;
+		text-align: end;
+	}
+	input#bd_year {
+		width: 4em !important;
+	}
+	form#profileform div:nth-of-type(1) > div p {
+		grid-column: 1/3;
+	}
+	form#profileform div:nth-of-type(2) textarea {
+		width : 100% !important;
+		height:  5em !important;
+	}
+
+	/** Editing Signature **/
+
+	#usercp_content .wysiwyg_block > div > div {
+		padding: 1em !important;
+	}
+
+	/** Preference **/
+
+	#usercp_content form[action="profile.php?do=updateoptions"] .section {
+		padding: 1em !important;
+		display: flex;
+		flex-direction: column;
+		gap: 1em;
+		box-sizing: border-box;
+		width: 100% !important;
+	}
+	#usercp_content form[action="profile.php?do=updateoptions"] .section * {
+		height: auto !important;
+		margin : 0 !important;
+		padding: 0 !important;
+		max-width: none !important;
+	}
+	#usercp_content form[action="profile.php?do=updateoptions"] .section > * {
+		border: none;
+		display: grid !important;
+		grid-template-columns: 100%;
+		gap: 1ex;
+	}
+	#usercp_content form[action="profile.php?do=updateoptions"] .section > *::after {
+		display: none !important;
+	}
+	#usercp_content form[action="profile.php?do=updateoptions"] .section > * > label {
+		width : auto !important;
+		margin: 1ex 0 0 0 !important;
+		font-weight: bold;
+	}
+	#usercp_content form[action="profile.php?do=updateoptions"] .section > * > select {
+		box-sizing: border-box;
+		padding: 0.5ex 1ex !important;
+		width: "min(30em, calc(100% - 2em))" % null !important;
+	}
+	#usercp_content ul.checkradio {
+		line-height: 1.5;
+	}
+	#usercp_content ul.checkradio::after {
+		display: none;
+	}
+
+	/** Black List **/
+	#userlist {
+		display: flex !important;
+		flex-direction: column;
+	}
+	#userlist form#ignorelist_change_form {
+		order: 2;
+	}
+	#userlist #ignorelist_change_form > div {
+		display: flex !important;
+		flex-direction: column;
+	}
+	#userlist #ignorelist_change_form > div > *:first-child {
+		order: 1;
+	}
+	#userlist #ignorelist_change_form > div > *:last-child {
+		order: 2;
+	}
+
+	#userlist #ignorelist_add_form .blockrow {
+		display: flex;
+		gap: 1em;
+		align-items: center;
+	}
+	#userlist #ignorelist_add_form .blockrow::after {
+		display: none;
+	}
+	#userlist #ignorelist_add_form .blockrow > label {
+		flex: 0 0 max-content;
+		width: auto;
+	}
+	#userlist #ignorelist_add_form .blockrow > #ignorelist_add {
+		position: static !important;
+		flex: 1 0 auto;
+		width: auto;
+		max-width: none !important;
+	}
+	#ignorelist_add_txt {
+		width: 100%;
+	}
+
+	#userlist form > div > div:not(.group) {
+		padding: 1em;
+	}
+	#userlist form > div > div * {
+		margin : 0;
+		padding: 0;
+	}
+	#userlist br {
+		display: none;
+	}
+	#userlist p {
+		line-height: normal;
+	}
+	#userlist ul {
+		line-height: 1.8;
+	}
+	#userlist li {
+		float: none;
+	}
+	#userlist ul + div::after {
+		display: none;
+	}
+	#userlist #ignorelist_change_form {
+		margin: 2em 0 0 0 !important;
+	}
+	#userlist #ignorelist_change_form div.section > div {
+		display: flex;
+		flex-direction: column;
+	}
+	#ignorelist {
+		order  : 1;
+		margin: 3ex 0 0 0 !important;
+		columns: 3 15em;
+	}
+	#ignorelist li {
+		break-inside: avoid;
+	}
+	#ignorelist li input {
+		margin: 0.8ex 0 0 0 !important;
+		vertical-align: top;
+	}
+	#ignorelist li a {
+		display: inline-block;
+		max-width: calc(100% - 2em);
+		overflow-wrap: anywhere;
+		vertical-align: top;
+	}
+
+	.standard_error {
+		grid-column: 1/3;
+		margin: 1em 0 !important;
+	}
+	.standard_error + div.clear {
+		display: none;
+	}
+	.standard_error + div + div {
+		grid-column: 2;
+		margin: 0 0 0 auto !important;
+	}
+}
