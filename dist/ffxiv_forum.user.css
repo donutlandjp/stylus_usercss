@@ -1,13 +1,14 @@
 /* ==UserStyle==
 @name         FFXIV Forum
 @description  This stylesheet seals evil horizontal scroll bars.
-@namespace    donutland.jp/edl/stylus_usrcss
+@namespace    donutland.jp/edl/stylus
 @author       Anne Donut
 @version      1.0.0
 @license      MIT
 @preprocessor stylus
 
 @var number viewWidth "本文の表示幅 (20-100)" [40, 20, 100, 1, "rem"]
+@var number lineHeight "本文の行間の高さ (0-1)" [0.5, 0, 1, 0.1]
 @var select authorDisplayMode "投稿者の表示形式" {
 	"標準": "normal",
 	"シンプル": "simple",
@@ -40,7 +41,7 @@
 
 :root {
 	--view-width    : viewWidth;
-	--line-height   : lineHeight;
+	--line-height   : lineHeight + 1;
 	--max-body-width: calc(var(--view-width) + 13rem + 2rem);
 	--subject-separator  : subjectSeparator;
 	--signature-separator: signatureSeparator;
@@ -1457,6 +1458,7 @@ ol.searchbits dl.threadlastpost > dd > a:nth-child(2) img {
 	font-family: inherit !important;
 	padding: 0 !important;
 	overflow: visible;
+	line-height: var(--line-height) !important;
 }
 .postbody h2.title,
 .postpreview > .blocksubhead {
