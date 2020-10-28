@@ -2416,6 +2416,9 @@ p {
 
 @-moz-document url-prefix("https://forum.square-enix.com/ffxiv/threads/") {
 if authorDisplayMode == compact {
+	.body_bound {
+		width: var(--view-width);
+	}
 	.postbody {
 		border: none !important;
 	}
