@@ -2507,6 +2507,15 @@ if authorDisplayMode == compact {
 		flex: 1 0 2rem;
 		background-color: var(--forum-background-color);
 	}
+	/* for Authorized Account */
+	.uinfogrp11 .postlinking,
+	.uinfogrp12 .postlinking,
+	.uinfogrp14 .postlinking,
+	.uinfogrp17 .postlinking,
+	.uinfogrp18 .postlinking,
+	.uinfogrp20 .postlinking {
+		background-color: #fff7e5 !important;
+	}
 
 } else {
 	if authorDisplayMode == simple {
@@ -2610,6 +2619,15 @@ if authorDisplayMode == compact {
 		.postfoot .postlinking {
 			flex: 1 0 2rem;
 			background-color: var(--forum-background-color);
+		}
+		/* for Authorized Account */
+		.uinfogrp11 .postlinking,
+		.uinfogrp12 .postlinking,
+		.uinfogrp14 .postlinking,
+		.uinfogrp17 .postlinking,
+		.uinfogrp18 .postlinking,
+		.uinfogrp20 .postlinking {
+			background-color: #fff7e5 !important;
 		}
 	}
 }
