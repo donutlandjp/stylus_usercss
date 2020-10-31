@@ -31,6 +31,10 @@
 	"あり*": "solid",
 	"なし": "none"
 }
+@var select ignoredUser "ブラックリスト投稿者の投稿" {
+	"表示する": "block",
+	"表示しない": "none"
+}
 @var select preview "編集プレヴューの位置" {
 	"上": "top",
 	"右": "right"
@@ -45,6 +49,7 @@
 	--max-body-width: calc(var(--view-width) + 13rem + 2rem);
 	--subject-separator  : subjectSeparator;
 	--signature-separator: signatureSeparator;
+	--ignored-user  : ignoredUser;
 	--preview-column-width: "min(50% - 1ex, calc(var(--view-width) + 2em))" % null;
 
 	--forum-foreground-color: #333333;
@@ -1664,6 +1669,43 @@ li.postbitdeleted .nodecontrols {
 }
 
 
+/** Ignored User's Post **/
+li.postbitignored {
+	display: var(--ignored-user);
+	background-color: var(--forum-background-color);
+}
+li.postbitignored p.usertitle {
+	margin-bottom: 0 !important;
+}
+li.postbitignored .posthead {
+	height: auto;
+}
+li.postbitignored .postbody {
+	padding-top: 0 !important;
+}
+li.postbitignored .userinfo,
+li.postbitignored h2.title {
+	border: none !important;
+	font-weight: normal;
+}
+li.postbitignored h2.title {
+	margin: 0 !important;
+}
+li.postbitignored h2.title a,
+li.postbitignored h2.title strong {
+	margin: 0 0.5ex;
+}
+li.postbitignored .content {
+	margin-left: 2em !important;
+}
+li.postbitignored .content a {
+	text-decoration: none;
+}
+li.postbitignored .nodecontrols {
+	display: none;
+}
+
+
 /** Tag List **/
 #thread_tags_list .inner_block {
 	padding: 1em !important;
@@ -3010,7 +3052,7 @@ url-prefix("https://forum.square-enix.com/ffxiv/profile") {
 
 	/** Favorate Threads **/
 	#usercp_content li.threadbit > div {
-		grid-template-columns: 1fr 9rem min-content;
+		grid-template-columns: 1fr 9rem 8.5rem;
 	}
 	#usercp_content .threadlisthead > *:nth-child(4),
 	#usercp_content ol#threads > li > div > *:nth-child(3) {
@@ -3027,7 +3069,7 @@ url-prefix("https://forum.square-enix.com/ffxiv/profile") {
 	@media (max-width: 45em) { 
 		#usercp_content .threadlisthead ,
 		#usercp_content li.threadbit > div {
-			grid-template-columns: 1fr min-content;
+			grid-template-columns: 1fr;
 		}
 		#usercp_content .threadlisthead > *:nth-child(3),
 		#usercp_content ol#threads > li > div > *:nth-child(2) {
