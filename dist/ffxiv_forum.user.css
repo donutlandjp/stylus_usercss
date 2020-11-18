@@ -3,7 +3,7 @@
 @description  This stylesheet seals evil horizontal scroll bars.
 @namespace    donutland.jp/edl/stylus_usercss
 @author       Anne Donut
-@version      1.0.2
+@version      1.0.3
 @license      MIT
 @preprocessor stylus
 
@@ -1903,6 +1903,9 @@ ul#tag_edit_list label {
 
 .postpreview + .actionbuttons {
 	display: none;
+}
+.postpreview > .preview {
+	line-height: var(--line-height) !important;
 }
 form.vbform {
 	max-width : 100% !important;
