@@ -3,12 +3,12 @@
 @description  This stylesheet seals evil horizontal scroll bars.
 @namespace    donutland.jp/edl/stylus_usercss
 @author       Anne Donut
-@version      1.0.1
+@version      1.0.2
 @license      MIT
 @preprocessor stylus
 
-@var number viewWidth "本文の表示幅 (20-100)" [40, 20, 100, 1, "rem"]
-@var number lineHeight "本文の行間の高さ (0-1)" [0.5, 0, 1, 0.1]
+@var number viewWidth "本文の表示幅 (20-100)" [30, 20, 100, 1]
+@var number lineHeight "本文の行の高さ (1.0-2.0)" [1.5, 1, 2, 0.1]
 @var select authorDisplayMode "投稿者の表示形式" {
 	"標準": "normal",
 	"シンプル": "simple",
@@ -41,12 +41,16 @@
 }
 ==/UserStyle== */
 
+userInfoWidth = 13
+maxBodyWidth  = userInfoWidth + viewWidth + 2
+
 @-moz-document domain("forum.square-enix.com") {
 
 :root {
-	--view-width    : viewWidth;
-	--line-height   : lineHeight + 1;
-	--max-body-width: calc(var(--view-width) + 13rem + 2rem);
+	--view-width    : viewWidth     rem;
+	--userinfo-width: userInfoWidth rem;
+	--max-body-width: maxBodyWidth  rem;
+	--line-height   : lineHeight;
 	--subject-separator  : subjectSeparator;
 	--signature-separator: signatureSeparator;
 	--ignored-user  : ignoredUser;
@@ -524,6 +528,9 @@ li.forumsearch form > ul li.formsubmit .submitoptions {
 	display: flex;
 	gap: 1em;
 	flex-direction: column;
+	background-image: none;
+	background-color: var(--forum-background-color);
+	border-color: var(--forum-border-color);
 }
 #view-aboutme > .subsection dl dt {
 	display: flex;
@@ -699,7 +706,6 @@ div.forumhead h2 > a img {
 
 .forumrow {
 	box-sizing: border-box;
-	min-height: auto !important;
 	padding   : 1ex;
 	display   : grid !important;
 	min-height: 2.8rem   !important;
@@ -920,7 +926,17 @@ li.threadbit > div {
 	gap     : 1em;
 	grid-template-columns: 1fr 7rem 9rem;
 }
-@media (max-width: 45em) { 
+if maxBodyWidth <= 40 {
+	.threadlisthead > div,
+	li.threadbit    > div {
+		grid-template-columns: 1fr 9rem;
+	}
+	.threadlisthead > div > *:nth-child(2),
+	li.threadbit    > div > *:nth-child(2) {
+		display: none;
+	}
+}
+@media (max-width: 40em) { 
 	.threadlisthead > div,
 	li.threadbit    > div {
 		grid-template-columns: 1fr 9rem;
@@ -1476,9 +1492,10 @@ ol.searchbits dl.threadlastpost > dd > a:nth-child(2) img {
 .bbcode_container {
 	margin: 1em 0;
 	display: flex;
+	flex-wrap: wrap;
 	gap: 1em;
 }
-.bbcode_container > *:not(.bbcode_quote) {
+.bbcode_container > *:not(.bbcode_quote)[style^="float"] {
 	flex: 0 0 5em;
 }
 /* Avator Icon */
@@ -1491,11 +1508,11 @@ ol.searchbits dl.threadlastpost > dd > a:nth-child(2) img {
 	max-width : 100%;
 	max-height: 80vh;
 }
-.bbcode_container > .bbcode_quote {
-	flex: 1 1 auto;
+.bbcode_container > .withavatar {
+	flex: 1 1 min-content;
 	margin: 0 !important;
 }
-.bbcode_container > *:last-child {
+.bbcode_container .withavatar + * {
 	display: none;
 }
 .bbcode_postedby > a:last-of-type img {
@@ -1518,6 +1535,38 @@ ol.searchbits dl.threadlastpost > dd > a:nth-child(2) img {
 }
 .postbody div.cleardiv {
 	display: none;
+}
+
+/** Code **/
+.bbcode_description {
+	display: none;
+}
+.bbcode_description + pre {
+	width : 100%;
+	height: auto !important;
+	white-space: pre-wrap;
+	overflow: auto !important;
+	border: solid thin var(--forum-border-color) !important;
+}
+
+/** Hidden Block **/
+.bbcode_hiddenblock {
+	margin: 1em 0 !important;
+	padding: 0 0 0 1ex;
+	border-style: none none none solid !important;
+	border-left: solid thick var(--forum-border-color) !important;
+}
+.bbcode_hiddenblock .bbcode_hiddenblock_header,
+.bbcode_hiddenblock .bbcode_hiddenblock_header * {
+	background-color: transparent !important;
+	border: none !important;
+	color : var(--forum-message-color) !important;
+}
+.bbcode_hiddenblock .bbcode_hiddenblock_header {
+	padding: 0 !important;
+}
+.bbcode_hiddenblock .bbcode_hiddenblock_body {
+	padding: 1em 0 0 0 !important;
 }
 
 .postfoot,
@@ -1578,7 +1627,7 @@ ol.searchbits dl.threadlastpost > dd > a:nth-child(2) img {
 }
 .postfoot .postlinking {
 	box-sizing: border-box;
-	flex: 0 0 13rem;
+	flex: 0 0 var(--userinfo-width);
 	padding: 0.8ex 1.5ex !important;
 	background-color: var(--forum-bazel-color);
 }
@@ -1603,8 +1652,8 @@ blockquote.signature {
 	border: none;
 }
 blockquote.signature > div {
-	padding: 1rem 0 0 0 !important;
-	margin : 1rem 0 0.5rem 0 !important;
+	padding: 0.5rem 0 0 0 !important;
+	margin : 1rem 0 0 0 !important;
 	display: signature  !important;
 	border-top: var(--signature-separator) medium var(--forum-border-color) !important;
 }
@@ -1617,7 +1666,7 @@ blockquote.signature img:not(.inlineimg) {
 		display: none !important;
 	} else if images == small {
 		max-height: 2rem !important;
-		width: auto! important;
+		width: auto !important;
 	}
 }
 
@@ -2417,7 +2466,9 @@ ul#searchtypelist li {
 
 /**** Logined ****/
 
-@-moz-document url-prefix("https://forum.square-enix.com/ffxiv/register") {
+@-moz-document url-prefix("https://forum.square-enix.com/ffxiv/register"),
+url-prefix("https://forum.square-enix.com/ffxiv/profile.php?do=updateprofile") {
+
 body {
 	box-sizing: border-box;
 	min-height: 100vh;
@@ -2446,11 +2497,20 @@ p {
 	padding: 0 !important;
 }
 .redirect_button a {
-	padding: 1ex;
+	padding: 0.5ex 1ex;
 	display: block !important;
+	border: solid thin var(--forum-message-color);
+	border-radius: 1em;
+	background-color: transparent;
+	color: var(--forum-message-color);
 	font-size: small !important;
 	font-weight: normal;
 	text-align: center;
+}
+.redirect_button a:hover {
+	background-color: var(--forum-message-color);
+	color: var(--forum-background-color);
+	transition: background-color 200ms, color 200ms;
 }
 } /* End of Login Page */
 
@@ -2511,28 +2571,6 @@ if authorDisplayMode == compact {
 		content: ":";
 		margin-right: 1ex;
 	}
-	/*
-	.userinfo dl.userinfo_extra {
-		margin: 0 !important;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: flex-end;
-		align-items: flex-start;
-	}
-	.userinfo dl.userinfo_extra * {
-		flex: none;
-	}
-	.userinfo dl.userinfo_extra dd {
-		margin-left: 0.5ex !important;
-	}
-	.userinfo dl.userinfo_extra dt:nth-of-type(1) {
-		margin-left: 1.5em !important;
-	}
-	.userinfo dl.userinfo_extra dt:nth-of-type(1),
-	.userinfo dl.userinfo_extra dd:nth-of-type(1) {
-		order: 1;
-	}
-	*/
 	.userinfo dl.userinfo_extra dt:nth-of-type(2):nth-last-of-type(2),
 	.userinfo dl.userinfo_extra dd:nth-of-type(2):nth-last-of-type(2) {
 		display: none;
@@ -2624,28 +2662,6 @@ if authorDisplayMode == compact {
 			content: ":";
 			margin-right: 1ex;
 		}
-		/*
-		.userinfo dl.userinfo_extra {
-			margin: 0 !important;
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: flex-end;
-			align-items: flex-start;
-		}
-		.userinfo dl.userinfo_extra * {
-			flex: none;
-		}
-		.userinfo dl.userinfo_extra dd {
-			margin-left: 0.5ex !important;
-		}
-		.userinfo dl.userinfo_extra dt:nth-of-type(1) {
-			margin-left: 1.5em !important;
-		}
-		.userinfo dl.userinfo_extra dt:nth-of-type(1),
-		.userinfo dl.userinfo_extra dd:nth-of-type(1) {
-			order: 1;
-		}
-		*/
 		.userinfo dl.userinfo_extra dt:nth-of-type(2):nth-last-of-type(2),
 		.userinfo dl.userinfo_extra dd:nth-of-type(2):nth-last-of-type(2) {
 			display: none;
@@ -2965,6 +2981,9 @@ url-prefix("https://forum.square-enix.com/ffxiv/profile") {
 		margin: 0 !important;
 		grid-template-columns: 1fr 9rem;
 	}
+	#new_subscribed_threads ol li > div > ul.threadstats {
+		display: none !important;
+	}
 	#new_subscribed_threads .author .label {
 		width: 100% !important;
 	}
@@ -2976,13 +2995,16 @@ url-prefix("https://forum.square-enix.com/ffxiv/profile") {
 		display: inline-block;
 		padding: 1ex 1em !important;
 	}
-	@media (max-width: 30rem) {
+	if viewWidth <= 30 {
 		#new_subscribed_threads ol li > div {
 			margin: 0 !important;
 			grid-template-columns: 1fr;
 		}
-		#new_subscribed_threads ol li > div > ul.threadstats {
-			display: none !important;
+	}
+	@media (max-width: 45rem) {
+		#new_subscribed_threads ol li > div {
+			margin: 0 !important;
+			grid-template-columns: 1fr;
 		}
 	}
 
@@ -3051,32 +3073,42 @@ url-prefix("https://forum.square-enix.com/ffxiv/profile") {
 
 
 	/** Favorate Threads **/
-	#usercp_content li.threadbit > div {
-		grid-template-columns: 1fr 9rem 8.5rem;
+	#usercp_content form[action^="subscription"] .threadlisthead,
+	#usercp_content form[action^="subscription"] li.threadbit > div {
+		grid-template-columns: 1fr 9rem min-content;
 	}
-	#usercp_content .threadlisthead > *:nth-child(4),
-	#usercp_content ol#threads > li > div > *:nth-child(3) {
+	#usercp_content form[action^="subscription"] .threadlisthead > *:nth-child(4),
+	#usercp_content form[action^="subscription"] ol#threads > li > div > *:nth-child(3) {
 		display: none;
 	}
-	#usercp_content .threadlisthead {
+	#usercp_content form[action^="subscription"] .threadlisthead {
 		box-sizing: border-box;
 		position  : static !important;
 		width  : 100%;
 		padding: 0.5ex 1ex 0.5ex 1em;
 		display: grid;
-		grid-template-columns: 1fr 9rem min-content;
 	}
-	@media (max-width: 45em) { 
-		#usercp_content .threadlisthead ,
-		#usercp_content li.threadbit > div {
-			grid-template-columns: 1fr;
+	if viewWidth <= 30 {
+		#usercp_content form[action^="subscription"] .threadlisthead,
+		#usercp_content form[action^="subscription"] li.threadbit > div {
+			grid-template-columns: 1fr min-content;
 		}
 		#usercp_content .threadlisthead > *:nth-child(3),
 		#usercp_content ol#threads > li > div > *:nth-child(2) {
 			display: none !important;
 		}
 	}
-	#usercp_content .threadlisthead > * {
+	@media (max-width: 45em) { 
+		#usercp_content form[action^="subscription"] .threadlisthead,
+		#usercp_content form[action^="subscription"] li.threadbit > div {
+			grid-template-columns: 1fr min-content;
+		}
+		#usercp_content form[action^="subscription"] .threadlisthead > *:nth-child(3),
+		#usercp_content form[action^="subscription"] ol#threads > li > div > *:nth-child(2) {
+			display: none !important;
+		}
+	}
+	#usercp_content form[action^="subscription"] .threadlisthead > * {
 		position: static !important;
 		float: none !important;
 		width: 100%;
@@ -3084,8 +3116,8 @@ url-prefix("https://forum.square-enix.com/ffxiv/profile") {
 		white-space: nowrap;
 		text-align: center;
 	}
-	#usercp_content li.threadbit > div > :nth-child(4),
-	#usercp_content li.threadbit > div > :nth-child(4) input {
+	#usercp_content form[action^="subscription"] li.threadbit > div > :nth-child(4),
+	#usercp_content form[action^="subscription"] li.threadbit > div > :nth-child(4) input {
 		display: block;
 		position: static !important;
 	}
